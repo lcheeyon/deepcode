@@ -12,6 +12,10 @@ Agentic compliance scanning: **code + IaC + cloud** → policy controls → **fi
 - **Implementation phases:** [`IMPLEMENTATION_PLAN.md`](IMPLEMENTATION_PLAN.md)
 - **User stories:** [`docs/user-stories/README.md`](docs/user-stories/README.md)
 - **Local dev (venv, lint, tests):** [`docs/dev-setup.md`](docs/dev-setup.md)
+- **PDF writeups (repo root):**
+  - [DeepGuard_Compliance_Engine.pdf](DeepGuard_Compliance_Engine.pdf) — compliance engine overview (PDF).
+  - [DeepGuard_Executive_Summary.pdf](DeepGuard_Executive_Summary.pdf) — executive summary (PDF).
+  - [玄武合规引擎_商业计划书.pdf](玄武合规引擎_商业计划书.pdf) — business plan (中文 PDF).
 
 ## Quick start (Phase L0)
 
