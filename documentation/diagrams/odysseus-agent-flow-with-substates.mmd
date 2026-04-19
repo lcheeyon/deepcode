@@ -1,0 +1,117 @@
+%% Odysseus LangGraph: agents + internal execution substates (design intent; graph.py wiring)
+%% Regenerate: bash scripts/render_documentation_diagrams.sh
+%%{init: {'theme': 'dark', 'themeVariables': {
+  'lineColor': '#22d3ee',
+  'arrowheadColor': '#22d3ee',
+  'primaryBorderColor': '#fbbf24',
+  'secondaryBorderColor': '#fbbf24',
+  'tertiaryBorderColor': '#fbbf24',
+  'primaryTextColor': '#f8fafc',
+  'secondaryTextColor': '#f8fafc',
+  'tertiaryTextColor': '#f8fafc',
+  'primaryColor': '#1e293b',
+  'secondaryColor': '#334155',
+  'tertiaryColor': '#475569',
+  'clusterBorder': '#38bdf8',
+  'edgeLabelBackground': '#0f172a',
+  'edgeLabelText': '#e2e8f0'
+}}}%%
+flowchart TB
+  START([START])
+
+  subgraph HM["Hermes — Ingestion gateway"]
+    H0[WAITING] --> H1[MATERIALISING]
+    H1 --> H2[ARTEFACT_READY]
+    H1 --> HX[FAILED]
+  end
+
+  subgraph TR["Tiresias — Policy parser"]
+    T0[WAITING] --> T1[PARSING]
+    T1 --> T2[CONTROLS_READY]
+    T1 --> TX[FAILED]
+  end
+
+  subgraph ARg["Argus — Code indexer"]
+    A0[WAITING] --> A1[INDEXING]
+    A1 --> A2[INDEX_READY]
+    A1 --> ARY[RETRYING]
+    ARY --> A1
+    A1 --> AX[FAILED]
+  end
+
+  subgraph LC["Laocoon — IaC analyser"]
+    L0[WAITING] --> L1[ANALYSING]
+    L1 --> L2[BRANCH_DONE]
+  end
+
+  subgraph LSK["laocoon_skipped — No IaC layer"]
+    LS0[SKIPPED] --> LS1[DONE]
+  end
+
+  subgraph CAS["Cassandra — Cloud config"]
+    CA0[WAITING] --> CA1[QUERYING]
+    CA1 --> CA2[BRANCH_DONE]
+  end
+
+  subgraph CSK["cassandra_skipped — Cloud off / no snapshots"]
+    CS0[SKIPPED] --> CS1[DONE]
+  end
+
+  subgraph P0g["parallel_code_0 — Code shard mapper"]
+    P00[WAITING] --> P01[MAPPING]
+    P01 --> P02[SHARD_DONE]
+  end
+
+  subgraph P1g["parallel_code_1 — Code shard mapper"]
+    Q00[WAITING] --> Q01[MAPPING]
+    Q01 --> Q02[SHARD_DONE]
+  end
+
+  subgraph CVG["convergence_gate — Fan-in merge"]
+    CV0[WAITING_BRANCHES] --> CV1[MERGING]
+    CV1 --> CV2[READY]
+  end
+
+  subgraph ATH["Athena — Compliance mapper"]
+    AT0[WAITING] --> AT1[MAPPING]
+    AT1 --> AT2[MAPPING_DONE]
+    AT1 --> ATR[REVIEW_REQUIRED]
+    ATR --> AT1
+    AT1 --> ATF[FAILED]
+  end
+
+  subgraph CIR["Circe — Remediation advisor"]
+    CI0[WAITING] --> CI1[SYNTHESISING]
+    CI1 --> CI2[ADVICE_READY]
+    CI1 --> CIF[FAILED]
+  end
+
+  subgraph PEN["Penelope — Report assembler"]
+    PE0[WAITING] --> PE1[ASSEMBLING]
+    PE1 --> PE2[REPORT_READY]
+    PE1 --> PEF[FAILED]
+  end
+
+  FAN{{fan_out_after_argus}}
+
+  START --> H0
+  H2 --> T0
+  T2 --> A0
+  A2 --> FAN
+  FAN --> L0
+  FAN --> LS0
+  FAN --> CA0
+  FAN --> CS0
+  FAN --> P00
+  FAN --> Q00
+  L2 --> CV0
+  LS1 --> CV0
+  CA2 --> CV0
+  CS1 --> CV0
+  P02 --> CV0
+  Q02 --> CV0
+  CV2 --> AT0
+  AT2 --> CI0
+  CI2 --> PE0
+  PE2 --> ENDN([END])
+  linkStyle default stroke:#22d3ee,stroke-width:4px

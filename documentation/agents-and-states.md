@@ -23,6 +23,21 @@ The same structure appears as Mermaid inline in [Agentic orchestration — §2](
 
 ---
 
+## Full pipeline with per-agent substates (detailed)
+
+The diagram below is a **single combined view**: each **rounded box (subgraph)** is one LangGraph node (or branch) with its **internal execution substates** on the left-to-right / top-to-bottom paths. Titles use **Name — short functionality** (e.g. **Hermes — Ingestion gateway**). **Happy-path** edges are emphasised in cyan; **FAILED** / **REVIEW** paths are shown inside the owning agent so you can see where errors or HITL attach without redrawing the whole spine.
+
+![Odysseus pipeline with per-agent internal substates](images/odysseus-agent-flow-with-substates.png)
+
+| Artefact | Path |
+|----------|------|
+| **PNG (detailed diagram)** | [`images/odysseus-agent-flow-with-substates.png`](images/odysseus-agent-flow-with-substates.png) |
+| **Mermaid source** | [`diagrams/odysseus-agent-flow-with-substates.mmd`](diagrams/odysseus-agent-flow-with-substates.mmd) |
+
+**How to read it:** follow **START → Hermes → … → END** along **ARTEFACT_READY → … → INDEX_READY → fan_out → … → BRANCH_DONE / DONE → convergence READY → MAPPING_DONE → ADVICE_READY → REPORT_READY**. **fan_out_after_argus** fans to **six** possible targets (only the branches selected for this scan run in code); all completed branches feed **WAITING_BRANCHES** on **convergence_gate**.
+
+---
+
 ## 1. Pipeline vs scan row lifecycle
 
 The **control plane** exposes coarse **scan lifecycle** values (`ScanLifecycleStatus` in `deepguard_core`). They describe **where the job is in the product**, not every internal agent micro-state.

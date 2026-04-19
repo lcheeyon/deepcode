@@ -32,7 +32,7 @@ The orchestrator is the **compiled LangGraph** `StateGraph`: it decides **order*
 
 **Hermes → Tiresias → Argus → (Laocoon ∥ Cassandra) → convergence_gate → Athena → Circe → Penelope**
 
-**Exported diagram (PNG):** see [Agents & state machines — Full agent transition flow](agents-and-states.md#full-agent-transition-flow-entire-pipeline) for the canonical image and paths to the `.mmd` source.
+**Exported diagrams (PNG):** see [Agents & state machines](agents-and-states.md#full-agent-transition-flow-entire-pipeline) for the **topology-only** image and [detailed pipeline + substates](agents-and-states.md#full-pipeline-with-per-agent-substates-detailed) for internal agent states and `.mmd` sources.
 
 ```mermaid
 flowchart TD

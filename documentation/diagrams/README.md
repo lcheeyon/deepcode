@@ -2,10 +2,17 @@
 
 PNG exports for MkDocs live in **`documentation/images/`**. Edit the **`.mmd`** files here, then regenerate.
 
-## Full Odysseus agent flow
+## Full Odysseus agent flow (topology only)
 
 **Source:** [`odysseus-full-agent-flow.mmd`](odysseus-full-agent-flow.mmd)  
-**PNG (built artefact):** [`../images/odysseus-full-agent-flow.png`](../images/odysseus-full-agent-flow.png)
+**PNG:** [`../images/odysseus-full-agent-flow.png`](../images/odysseus-full-agent-flow.png)
+
+## Full pipeline + per-agent substates (detailed)
+
+**Source:** [`odysseus-agent-flow-with-substates.mmd`](odysseus-agent-flow-with-substates.mmd)  
+**PNG:** [`../images/odysseus-agent-flow-with-substates.png`](../images/odysseus-agent-flow-with-substates.png)
+
+Internal states match the intent described in [Agents & state machines](../agents-and-states.md) (sections 3–8).
 
 ### Regenerate (recommended — no local Chrome)
 

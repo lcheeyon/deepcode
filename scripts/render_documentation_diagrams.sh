@@ -19,4 +19,6 @@ render_one() {
 }
 
 render_one odysseus-full-agent-flow
+render_one odysseus-agent-flow-with-substates
 echo "OK: $IMG/odysseus-full-agent-flow.png"
+echo "OK: $IMG/odysseus-agent-flow-with-substates.png"
