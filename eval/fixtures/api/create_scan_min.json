@@ -1,0 +1,12 @@
+{
+  "repo": {
+    "url": "https://github.com/acme/service",
+    "ref": "main"
+  },
+  "policy_ids": ["ISO-27001-2022"],
+  "scan_layers": {
+    "code": true,
+    "iac": false,
+    "cloud": false
+  }
+}

@@ -1,0 +1,29 @@
+%%{init: {'theme': 'base', 'themeVariables': {'primaryColor': '#1A3A5C', 'primaryTextColor': '#ffffff', 'primaryBorderColor': '#1A56DB', 'lineColor': '#1A56DB', 'fontFamily': 'Arial Unicode MS, PingFang SC, Microsoft YaHei, sans-serif', 'fontSize': '11px'}, 'flowchart': {'rankSpacing': 30, 'nodeSpacing': 10, 'padding': 8}}}%%
+flowchart TD
+    A([开始]) --> B["太白金星 — 摄取代理  克隆仓库·解压ZIP·调用云连接器  GitHub·GitLab·Gitee·Bitbucket"]
+    B --> C["伏羲 — 策略解析器  解析合规文档→控制要求含范围标签  等保2.0·网络安全法·PIPL·DSMM"]
+    C --> D["千里眼 — 代码索引器  AST解析+依赖图+pgvector索引  Python·Go·Java·TypeScript"]
+    D --> PAR{"按控制要求范围并行展开"}
+    PAR --> F["代码分析器  RAG检索源代码向量索引  跨语言深度推理"]
+    PAR --> G["钟馗 — IaC分析器  Terraform/阿里云ROS/CFN  Bicep/Pulumi/Helm"]
+    PAR --> H["比干 — 云配置代理  CloudConnector→标准资源快照  阿里云·腾讯云·华为云·AWS"]
+    F --> I["观音菩萨 — 合规映射代理  LLM推理：通过/失败/部分通过/不适用  跨层关联：基础设施承诺vs代码实现缺口  生成发现项：证据·严重性·CVSS·推理链"]
+    G --> I
+    H --> I
+    I --> J["神农氏 — 修复建议代理  代码补丁（diff格式）/IaC修复/云CLI命令  阿里云CLI·腾讯云CLI·AWS CLI·huaweicloud"]
+    J --> K["织女 — 报告组装器→PDF生成器  等保2.0映射表·发现汇总·CVSS评分·修复建议"]
+    K --> L["OSS/COS/OBS加密存储  通知→钉钉/企业微信/Slack/邮件"]
+    L --> M([结束])
+    style A fill:#16A34A,color:#fff,stroke:#16A34A
+    style M fill:#16A34A,color:#fff,stroke:#16A34A
+    style B fill:#0D2137,color:#fff,stroke:#1A56DB
+    style C fill:#0D2137,color:#fff,stroke:#1A56DB
+    style D fill:#0D2137,color:#fff,stroke:#1A56DB
+    style PAR fill:#B45309,color:#fff,stroke:#D97706
+    style F fill:#1E3A5F,color:#fff,stroke:#1A56DB
+    style G fill:#1E3A5F,color:#fff,stroke:#1A56DB
+    style H fill:#1E3A5F,color:#fff,stroke:#1A56DB
+    style I fill:#7C2D12,color:#fff,stroke:#DC2626
+    style J fill:#0D2137,color:#fff,stroke:#1A56DB
+    style K fill:#14532D,color:#fff,stroke:#16A34A
+    style L fill:#1E3A5F,color:#fff,stroke:#1A56DB

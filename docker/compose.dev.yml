@@ -1,0 +1,68 @@
+# Local data plane — Phase L1 (Architecture §34)
+# Usage: from repo root — docker compose -f docker/compose.dev.yml up -d
+# Optional: set DEEPGUARD_*_PORT in `.env` (repo root) if host ports conflict.
+#
+services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    container_name: deepguard-postgres
+    environment:
+      POSTGRES_USER: deepguard
+      POSTGRES_PASSWORD: deepguard
+      POSTGRES_DB: deepguard
+    ports:
+      - "${DEEPGUARD_POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - deepguard_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U deepguard -d deepguard"]
+      interval: 3s
+      timeout: 5s
+      retries: 10
+      start_period: 5s
+
+  redis:
+    image: redis:7-alpine
+    container_name: deepguard-redis
+    ports:
+      - "${DEEPGUARD_REDIS_PORT:-6379}:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 3s
+      timeout: 3s
+      retries: 5
+
+  minio:
+    image: minio/minio:latest
+    container_name: deepguard-minio
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: deepguard
+      MINIO_ROOT_PASSWORD: deepguarddev
+    ports:
+      - "${DEEPGUARD_MINIO_API_PORT:-9000}:9000"
+      - "${DEEPGUARD_MINIO_CONSOLE_PORT:-9001}:9001"
+    volumes:
+      - deepguard_minio:/data
+
+  minio-init:
+    image: minio/mc:latest
+    container_name: deepguard-minio-init
+    depends_on:
+      minio:
+        condition: service_started
+    volumes:
+      - ./minio-cors.json:/tmp/minio-cors.json:ro
+    entrypoint: /bin/sh
+    command: >
+      -c "
+      until mc alias set local http://minio:9000 deepguard deepguarddev 2>/dev/null; do sleep 1; done;
+      mc mb local/deepguard-dev --ignore-existing;
+      mc cors set-json local/deepguard-dev /tmp/minio-cors.json;
+      echo 'bucket deepguard-dev ready (CORS JSON for browser PUT from Next dev port)'
+      "
+    restart: "no"
+
+volumes:
+  deepguard_pgdata:
+  deepguard_minio:

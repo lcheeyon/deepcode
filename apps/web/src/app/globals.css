@@ -1,0 +1,80 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --dg-surface-page: #fafafa;
+  --dg-surface-card: #ffffff;
+  --dg-surface-subtle: #f4f4f5;
+  --dg-border-default: #e4e4e7;
+  --dg-border-strong: #d4d4d8;
+  --dg-text-primary: #18181b;
+  --dg-text-muted: #52525b;
+  --dg-text-disabled: #a1a1aa;
+  --dg-text-inverse: #fafafa;
+  --dg-brand-primary: #4f46e5;
+  --dg-brand-primary-hover: #4338ca;
+  --dg-brand-primary-muted: #eef2ff;
+  --dg-status-success: #059669;
+  --dg-status-success-bg: #ecfdf5;
+  --dg-status-warning: #d97706;
+  --dg-status-warning-bg: #fffbeb;
+  --dg-status-error: #e11d48;
+  --dg-status-error-bg: #fff1f2;
+  --dg-status-info: #0284c7;
+  --dg-status-info-bg: #f0f9ff;
+  --dg-shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --dg-shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.08), 0 2px 4px -2px rgb(0 0 0 / 0.06);
+  --dg-shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.08), 0 4px 6px -4px rgb(0 0 0 / 0.06);
+}
+
+html.dark {
+  --dg-surface-page: #09090b;
+  --dg-surface-card: #18181b;
+  --dg-surface-subtle: #18181b;
+  --dg-border-default: #3f3f46;
+  --dg-border-strong: #52525b;
+  --dg-text-primary: #fafafa;
+  --dg-text-muted: #a1a1aa;
+  --dg-text-disabled: #52525b;
+  --dg-text-inverse: #18181b;
+  --dg-brand-primary: #818cf8;
+  --dg-brand-primary-hover: #6366f1;
+  --dg-brand-primary-muted: #312e81;
+  --dg-status-success: #34d399;
+  --dg-status-success-bg: #064e3b;
+  --dg-status-warning: #fbbf24;
+  --dg-status-warning-bg: #78350f;
+  --dg-status-error: #fb7185;
+  --dg-status-error-bg: #881337;
+  --dg-status-info: #38bdf8;
+  --dg-status-info-bg: #0c4a6e;
+  --dg-shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.4);
+  --dg-shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.45);
+  --dg-shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.5);
+}
+
+@layer base {
+  body {
+    @apply bg-dg-page text-dg-text-primary antialiased;
+    font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+      Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji", sans-serif;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+@layer utilities {
+  .font-tabular {
+    font-variant-numeric: tabular-nums;
+  }
+}

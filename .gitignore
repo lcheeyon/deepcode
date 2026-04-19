@@ -1,0 +1,36 @@
+# Python
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+.eggs/
+dist/
+build/
+*.egg
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# MkDocs static site output
+site/
+
+# Generated test reports (pytest-html / junit / logs)
+reports/html/
+reports/junit-*.xml
+reports/pytest-*.txt
+
+# IDE / OS
+.idea/
+.vscode/
+.DS_Store
+*.swp
+
+# Env (never commit secrets)
+.env
+.env.local

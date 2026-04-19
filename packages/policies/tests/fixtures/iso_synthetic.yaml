@@ -1,0 +1,9 @@
+framework: ISO_27001_SYNTHETIC
+version: "2022-demo"
+controls:
+  - control_id: A.5.1
+    title: Policies for information security
+    description: Policy documentation exists and is approved.
+    layer_relevance: ["CODE", "IAC"]
+    severity_weight: 3.0
+    evidence_types: ["policy_excerpt", "config_snippet"]

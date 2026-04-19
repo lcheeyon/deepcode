@@ -1,0 +1,44 @@
+# Install: pip3 install -e ".[dev]" && pre-commit install
+# Run all: pre-commit run --all-files  (or: make pre-commit)
+default_install_hook_types: [pre-commit]
+repos:
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.9.9
+    hooks:
+      - id: ruff-check
+        args: [--fix]
+      - id: ruff-format
+
+  - repo: local
+    hooks:
+      - id: mypy-deepguard
+        name: mypy (deepguard packages)
+        entry: python3 -m mypy -p deepguard_core -p deepguard_graph -p deepguard_policies -p deepguard_parsers -p deepguard_connectors -p deepguard_agents -p deepguard_reporting -p deepguard_observability -p deepguard_api -p deepguard_worker
+        language: system
+        pass_filenames: false
+        types_or: [python, pyi]
+
+      - id: pyright
+        name: pyright
+        entry: python3 -m pyright
+        language: system
+        pass_filenames: false
+        types_or: [python, pyi]
+
+      - id: pytest-fast
+        name: pytest (unit; excludes integration marker)
+        entry: python3 -m pytest -q -m not integration --tb=short --maxfail=5
+        language: system
+        pass_filenames: false
+
+      - id: lint-imports
+        name: import-linter
+        entry: bash scripts/run_lint_imports.sh
+        language: system
+        pass_filenames: false
+
+      - id: bandit
+        name: bandit (apps + sensitive packages)
+        entry: python3 -m bandit -c pyproject.toml -q -r apps/api/src apps/worker/src packages/agents/src packages/connectors/src
+        language: system
+        pass_filenames: false

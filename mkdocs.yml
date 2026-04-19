@@ -1,0 +1,83 @@
+# DeepGuard — static documentation site (Material for MkDocs).
+# https://squidfunk.github.io/mkdocs-material/
+#
+# Source pages live under documentation/ (repo docs/ is reserved for design + user stories).
+# Build: pip3 install -e ".[docs]" && mkdocs build  (or: make docs)
+
+site_name: DeepGuard (玄武)
+site_description: >-
+  Agentic compliance engine — architecture, implementation status, API, and developer guides.
+site_url: https://lcheeyon.github.io/deepcode/
+repo_url: https://github.com/lcheeyon/deepcode
+repo_name: lcheeyon/deepcode
+docs_dir: documentation
+site_dir: site
+
+theme:
+  name: material
+  language: en
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+    - toc.follow
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  icon:
+    repo: fontawesome/brands/github
+
+plugins:
+  - search
+
+markdown_extensions:
+  - abbr
+  - admonition
+  - attr_list
+  - def_list
+  - footnotes
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.tasklist:
+      custom_checkbox: true
+
+extra:
+  generator: false
+
+nav:
+  - Home: index.md
+  - Getting started: getting-started.md
+  - Architecture: architecture.md
+  - Agentic orchestration: agentic-orchestration.md
+  - Monorepo layout: monorepo.md
+  - Control plane API: control-plane-api.md
+  - Worker & queue: worker-queue.md
+  - Docker & data plane: docker-data-plane.md
+  - Testing & CI: testing-ci.md
+  - Backlog & traceability: backlog.md
+  - Design artifacts: design.md
+  - Repository reference: repository-reference.md
+
+strict: true

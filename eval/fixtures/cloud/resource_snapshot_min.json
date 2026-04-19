@@ -1,0 +1,7 @@
+{
+  "schema": "deepguard.resource_snapshot/v1",
+  "provider": "aws",
+  "resources": [
+    {"type": "aws_s3_bucket", "id": "example", "region": "us-east-1"}
+  ]
+}

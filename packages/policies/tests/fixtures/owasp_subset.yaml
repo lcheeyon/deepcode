@@ -1,0 +1,9 @@
+framework: OWASP_ASVS
+version: "4.0.3"
+controls:
+  - control_id: V1.1.1
+    title: Encode and decode data to protect against injection
+    description: Application uses contextual output encoding.
+    layer_relevance: ["CODE"]
+    severity_weight: 2.5
+    evidence_types: ["file_reference"]

@@ -1,0 +1,2 @@
+{"control_id": "ACME-CTRL-1", "expected_status": "PARTIAL", "min_confidence": 0.5}
+{"control_id": "ACME-CTRL-2", "expected_status": "PARTIAL", "min_confidence": 0.5}
