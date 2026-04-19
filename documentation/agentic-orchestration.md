@@ -32,6 +32,8 @@ The orchestrator is the **compiled LangGraph** `StateGraph`: it decides **order*
 
 **Hermes → Tiresias → Argus → (Laocoon ∥ Cassandra) → convergence_gate → Athena → Circe → Penelope**
 
+**Exported diagram (PNG):** see [Agents & state machines — Full agent transition flow](agents-and-states.md#full-agent-transition-flow-entire-pipeline) for the canonical image and paths to the `.mmd` source.
+
 ```mermaid
 flowchart TD
   START([START]) --> H[Hermes]
@@ -121,6 +123,7 @@ Upstream **per-agent VERIFY + confidence** (§3.2) complements this: severe unce
 
 | Document | Topic |
 |----------|--------|
+| [Agents & state machines](agents-and-states.md) (this site) | Per-agent states, diagrams, trigger rules |
 | `Architecture_Design.md` §3–§5, §14 | Reasoning loop, graph, messaging, state |
 | `IMPLEMENTATION_PLAN.md` | Phase ↔ EPIC rollout |
 | `docs/user-stories/EPIC-01-scan-job-orchestration.md` | Backlog ACs for graph behaviour |

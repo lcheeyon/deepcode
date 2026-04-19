@@ -21,6 +21,7 @@ Scan execution order for v0 is fixed in **`IMPLEMENTATION_PLAN.md`**: Hermes →
 | Document | Purpose |
 |----------|---------|
 | [Agentic orchestration](agentic-orchestration.md) | Curated walkthrough: agent roles, LangGraph topology, inter-agent state/messaging, convergence gate vs stubs. |
+| [Agents & state machines](agents-and-states.md) | Per-agent purpose, state meanings, Mermaid state diagrams, and cross-agent trigger rules. |
 | [LangGraph / LangChain / LangSmith / LangFuse](langstack-usage-and-roadmap.md) | What the repo actually uses today vs architecture intent, and a roadmap for deeper integration and observability. |
 | `Architecture_Design.md` | Full technical specification (C4-style context, LangGraph, API §28, schema §29, queue §30, storage §32, testing §33). |
 | `.cursor/skills/deepguard-architecture/SKILL.md` | Condensed architecture skill for agents. |

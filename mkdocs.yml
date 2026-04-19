@@ -71,6 +71,7 @@ nav:
   - Getting started: getting-started.md
   - Architecture: architecture.md
   - Agentic orchestration: agentic-orchestration.md
+  - Agents & state machines: agents-and-states.md
   - Monorepo layout: monorepo.md
   - Control plane API: control-plane-api.md
   - Worker & queue: worker-queue.md

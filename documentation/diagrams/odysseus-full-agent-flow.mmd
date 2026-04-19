@@ -1,0 +1,41 @@
+%% Odysseus LangGraph: full agent transition flow (packages/graph/src/deepguard_graph/graph.py)
+%% High-contrast edges for dark backgrounds (cyan) + amber node borders.
+%% Regenerate: bash scripts/render_documentation_diagrams.sh
+%%{init: {'theme': 'dark', 'themeVariables': {
+  'lineColor': '#22d3ee',
+  'arrowheadColor': '#22d3ee',
+  'primaryBorderColor': '#fbbf24',
+  'secondaryBorderColor': '#fbbf24',
+  'tertiaryBorderColor': '#fbbf24',
+  'primaryTextColor': '#f8fafc',
+  'secondaryTextColor': '#f8fafc',
+  'tertiaryTextColor': '#f8fafc',
+  'primaryColor': '#1e293b',
+  'secondaryColor': '#334155',
+  'tertiaryColor': '#475569',
+  'clusterBorder': '#38bdf8',
+  'edgeLabelBackground': '#0f172a',
+  'edgeLabelText': '#e2e8f0'
+}}}%%
+flowchart TB
+  START([START]) --> Hermes[Hermes]
+  Hermes --> Tiresias[Tiresias]
+  Tiresias --> Argus[Argus]
+  Argus --> Fan{{fan_out_after_argus<br/>Send parallel}}
+  Fan --> Laocoon[Laocoon]
+  Fan --> LaocoonSkip[laocoon_skipped]
+  Fan --> Cassandra[Cassandra]
+  Fan --> CassSkip[cassandra_skipped]
+  Fan --> PC0[parallel_code_0]
+  Fan --> PC1[parallel_code_1]
+  Laocoon --> Conv[convergence_gate]
+  LaocoonSkip --> Conv
+  Cassandra --> Conv
+  CassSkip --> Conv
+  PC0 --> Conv
+  PC1 --> Conv
+  Conv --> Athena[Athena]
+  Athena --> Circe[Circe]
+  Circe --> Penelope[Penelope]
+  Penelope --> ENDN([END])
+  linkStyle default stroke:#22d3ee,stroke-width:4px
