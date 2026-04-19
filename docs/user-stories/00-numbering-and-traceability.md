@@ -47,6 +47,20 @@ Copy to your test management tool; maintain **one row per AC** minimum.
 |---------|-------|-------|------------|-----------------|------------|--------|
 | EPIC-DG-02 | US-DG-02-001 | AC-DG-02-001-01 | … | TC-DG-02-001-01 | Y | Planned |
 
+## Extended planning fields (generator schema)
+
+`traceability-ac-detail-matrix.csv` includes additional governance columns:
+
+- `phase_primary`, `phase_secondary` (from `IMPLEMENTATION_PLAN.md` epic mapping)
+- `priority`, `moscow`, `release`
+- `requirement_type`, `nfr_metric`, `nfr_target`
+- `depends_on_epics`, `depends_on_us`, `depends_on_acs`
+- `test_layer_required`, `min_automated_tests`
+- `framework_tags`, `control_clause_ids`
+- `owner_role`, `estimate_points`
+
+Use these to drive sprint cut-lines, dependency ordering, and compliance exports.
+
 ## Non-functional requirements (NFR)
 
 When an AC is non-functional (latency, SLO, cost cap), keep the same `AC-DG-*` IDs but tag:

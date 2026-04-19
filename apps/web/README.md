@@ -38,8 +38,10 @@ See repository **`.env.example`** for `DEEPGUARD_CORS_ORIGINS`.
 |---------|-------------|
 | `npm run dev` | Next dev server (port 3000). |
 | `npm run build` | Production build. |
-| `npm run test:e2e` | Playwright tests (`e2e/`): mocked API routes + **skipped** real MinIO tests unless `E2E_REAL_API=1`. |
+| `npm run test:e2e` | Playwright tests (`e2e/`): mocked API routes + **skipped** opt-in suites (`E2E_LIVE_BACKEND`, `E2E_REAL_API`, `E2E_POWER_RAG_BACKEND`, …). |
+| `npm run test:e2e:live` | **`e2e-live-control-plane.spec.ts`** only — **no HTTP mocks**; browser calls real `/v1` (`healthz`, create scan, Bearer). Requires **`E2E_LIVE_BACKEND=1`** and API + CORS (see file header comment). |
 | `npm run test:e2e:compose` | Only **`e2e/repo-upload-minio.spec.ts`** — hits a real API + MinIO (set `E2E_API_BASE_URL` / `E2E_API_KEY` as needed). |
+| `npm run report:bdd-pdf` | After **`npm run test:e2e`**, builds **`reports/playwright-bdd-report.pdf`** (all BDD step PNGs + titles) via **`scripts/playwright_bdd_report_to_pdf.py`**. |
 | `npm run test:e2e:ui` | Playwright UI mode. |
 | `./scripts/agent-browser-smoke.sh` | Optional snapshot smoke (requires [agent-browser](https://agent-browser.dev/) CLI). Set `PLAYWRIGHT_BASE_URL` if not using default `http://127.0.0.1:3000`. |
 
@@ -77,3 +79,5 @@ GitHub Actions job **`web-console-e2e-compose`** starts **MinIO** (`docker/compo
 | US-DG-14-012 | Theme: system / light / dark (persisted). |
 | US-DG-14-013 | Playwright `e2e/console.spec.ts`. |
 | US-DG-14-014 | This README + env docs. |
+| (BDD mock) | `e2e/bdd-console-power-rag-mock.spec.ts` — full shell + **Git scan** for [lcheeyon/power-rag](https://github.com/lcheeyon/power-rag) with **mocked** API; asserts `POST /v1/scans` payload. |
+| (BDD real) | `e2e/bdd-console-power-rag.spec.ts` — same flow against **local uvicorn + worker**; set **`E2E_POWER_RAG_BACKEND=1`** (see **`documentation/testing-ci.md`**, **`scripts/run_web_e2e_power_rag_bdd.sh`**). |

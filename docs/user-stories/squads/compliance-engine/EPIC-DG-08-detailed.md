@@ -2,7 +2,7 @@
 
 # EPIC-DG-08 — Compliance mapping & cross-layer reasoning (Athena)
 
-> **AC-level test specifications (generated):** Squad copy [`squads/compliance-engine/EPIC-DG-08-detailed.md`](squads/compliance-engine/EPIC-DG-08-detailed.md); per-AC rows [`traceability-ac-detail-matrix.csv`](traceability-ac-detail-matrix.csv). Regenerate: `python3 scripts/generate_ac_details_and_squad_docs.py`.
+> **AC-level test specifications (generated):** Squad copy [`squads/compliance-engine/EPIC-DG-08-detailed.md`](squads/compliance-engine/EPIC-DG-08-detailed.md); per-AC rows [`traceability-ac-detail-matrix.csv`](traceability-ac-detail-matrix.csv), JSON [`traceability-ac-detail.json`](traceability-ac-detail.json). Regenerate: `python3 scripts/generate_ac_details_and_squad_docs.py` then `python3 scripts/validate_user_stories_traceability.py`.
 
 
 **Goal:** Map controls to PASS/FAIL/PARTIAL/NA with evidence, run generator–critic reconciliation, emit cross-layer composite findings, and expose confidence for governance per `Architecture_Design.md` §3, §16, §18.
@@ -38,7 +38,7 @@
 
 ### AC test specifications (US-DG-08-001)
 
-Expands each acceptance criterion for **QA authoring**, **pytest markers**, and **import into Xray/TestRail**.
+Expands each AC with phase, dependency, priority, NFR, test-layer, and traceability fields.
 
 #### Test specification — AC-DG-08-001-01
 
@@ -46,16 +46,25 @@ Expands each acceptance criterion for **QA authoring**, **pytest markers**, and 
 |-----------|---------------|
 | **Parent US** | `US-DG-08-001` |
 | **Parent EPIC** | `EPIC-DG-08` |
-| **Owning squad** | `compliance-engine` |
+| **Owning squad / role** | `compliance-engine` / `applied_ml_engineer` |
+| **Phase mapping** | primary `L10`; secondary `L11/L12` |
+| **Priority / release** | `P1` / `MVP` |
+| **MoSCoW** | `Should` |
+| **Requirement type** | `Functional` |
+| **NFR metric / target** | `- / -` |
+| **Dependencies** | epics `-`; stories `-`; ACs `-` |
+| **Required test layer** | `unit+integration` (min automated tests: `1`) |
+| **Framework / control tags** | `-` / `-` |
+| **Estimate (story points hint)** | `3` |
 | **Requirement (verbatim)** | Findings include `control_id`, `severity`, `evidence_refs`, `reasoning_summary`, `confidence_score`, `status` (Architecture §3.1, §29.1). |
-| **Objective** | Verify the behaviour described in AC-DG-08-001-01: Findings include `control_id`, `severity`, `evidence_refs`, `reasoning_summary`, `confidence_score`, `status` (Architecture §3.1, §29.1). |
+| **Objective** | Verify AC-DG-08-001-01: Findings include `control_id`, `severity`, `evidence_refs`, `reasoning_summary`, `confidence_score`, `status` (Architecture §3.1, §29.1). |
 | **Preconditions** | Tenant and scan fixtures exist; services healthy per test environment bootstrap. |
-| **Verification procedure** | 1. Arrange test data and configuration to match preconditions. \| 2. Execute the operation or graph path under test (single happy path unless AC implies negative). \| 3. Assert post-conditions against DB rows, API responses, object store metadata, queue state, or traces as applicable. |
-| **Expected result** | All assertions pass; no secret material in logs; stable machine-readable error_code on failures; state remains tenant-scoped for EPIC-DG-08. |
-| **Edge / negative focus** | Concurrent requests: no cross-tenant leakage and no duplicate side effects when idempotency applies. \| Timeout / partial failure: system reaches documented terminal or degraded state without data corruption. |
+| **Verification procedure** | 1. Arrange test data and configuration to match preconditions. \| 2. Execute the operation or graph/API path under test. \| 3. Assert post-conditions against DB rows, API responses, object store metadata, queue state, or traces. |
+| **Expected result** | Assertions pass; no secret material in logs; stable machine-readable error_code on failures; tenant isolation preserved for EPIC-DG-08. |
+| **Edge / negative focus** | Concurrent requests do not duplicate side effects; timeout/partial failures reach documented degraded or terminal states. |
 | **Primary automated test ID** | `TC-DG-08-001-01` |
 | **Secondary / negative test ID** | `TC-DG-08-001-01.2` |
-| **Automation hints** | pytest marker @pytest.mark.req("AC-DG-08-001-01") or Xray/TestRail key == ac_id |
+| **Automation hints** | pytest marker @pytest.mark.req("AC-DG-08-001-01") or Xray/TestRail key == AC-DG-08-001-01 |
 | **Spec references** | Architecture §3.1, §29.1 |
 
 #### Test specification — AC-DG-08-001-02
@@ -64,16 +73,25 @@ Expands each acceptance criterion for **QA authoring**, **pytest markers**, and 
 |-----------|---------------|
 | **Parent US** | `US-DG-08-001` |
 | **Parent EPIC** | `EPIC-DG-08` |
-| **Owning squad** | `compliance-engine` |
+| **Owning squad / role** | `compliance-engine` / `applied_ml_engineer` |
+| **Phase mapping** | primary `L10`; secondary `L11/L12` |
+| **Priority / release** | `P1` / `MVP` |
+| **MoSCoW** | `Should` |
+| **Requirement type** | `Functional` |
+| **NFR metric / target** | `- / -` |
+| **Dependencies** | epics `-`; stories `-`; ACs `-` |
+| **Required test layer** | `unit+integration` (min automated tests: `1`) |
+| **Framework / control tags** | `-` / `-` |
+| **Estimate (story points hint)** | `3` |
 | **Requirement (verbatim)** | Low confidence after max iterations marks `UNCERTAIN` + `should_escalate` behaviours per thresholds (Architecture §3.2). |
-| **Objective** | Verify the behaviour described in AC-DG-08-001-02: Low confidence after max iterations marks `UNCERTAIN` + `should_escalate` behaviours per thresholds (Architecture §3.2). |
+| **Objective** | Verify AC-DG-08-001-02: Low confidence after max iterations marks `UNCERTAIN` + `should_escalate` behaviours per thresholds (Architecture §3.2). |
 | **Preconditions** | Tenant and scan fixtures exist; services healthy per test environment bootstrap. |
-| **Verification procedure** | 1. Arrange test data and configuration to match preconditions. \| 2. Execute the operation or graph path under test (single happy path unless AC implies negative). \| 3. Assert post-conditions against DB rows, API responses, object store metadata, queue state, or traces as applicable. |
-| **Expected result** | All assertions pass; no secret material in logs; stable machine-readable error_code on failures; state remains tenant-scoped for EPIC-DG-08. |
-| **Edge / negative focus** | Concurrent requests: no cross-tenant leakage and no duplicate side effects when idempotency applies. \| Timeout / partial failure: system reaches documented terminal or degraded state without data corruption. |
+| **Verification procedure** | 1. Arrange test data and configuration to match preconditions. \| 2. Execute the operation or graph/API path under test. \| 3. Assert post-conditions against DB rows, API responses, object store metadata, queue state, or traces. |
+| **Expected result** | Assertions pass; no secret material in logs; stable machine-readable error_code on failures; tenant isolation preserved for EPIC-DG-08. |
+| **Edge / negative focus** | Concurrent requests do not duplicate side effects; timeout/partial failures reach documented degraded or terminal states. |
 | **Primary automated test ID** | `TC-DG-08-001-02` |
 | **Secondary / negative test ID** | `TC-DG-08-001-02.2` |
-| **Automation hints** | pytest marker @pytest.mark.req("AC-DG-08-001-02") or Xray/TestRail key == ac_id |
+| **Automation hints** | pytest marker @pytest.mark.req("AC-DG-08-001-02") or Xray/TestRail key == AC-DG-08-001-02 |
 | **Spec references** | Architecture §3.2 |
 
 
@@ -90,7 +108,7 @@ Expands each acceptance criterion for **QA authoring**, **pytest markers**, and 
 
 ### AC test specifications (US-DG-08-002)
 
-Expands each acceptance criterion for **QA authoring**, **pytest markers**, and **import into Xray/TestRail**.
+Expands each AC with phase, dependency, priority, NFR, test-layer, and traceability fields.
 
 #### Test specification — AC-DG-08-002-01
 
@@ -98,16 +116,25 @@ Expands each acceptance criterion for **QA authoring**, **pytest markers**, and 
 |-----------|---------------|
 | **Parent US** | `US-DG-08-002` |
 | **Parent EPIC** | `EPIC-DG-08` |
-| **Owning squad** | `compliance-engine` |
+| **Owning squad / role** | `compliance-engine` / `applied_ml_engineer` |
+| **Phase mapping** | primary `L10`; secondary `L11/L12` |
+| **Priority / release** | `P1` / `MVP` |
+| **MoSCoW** | `Should` |
+| **Requirement type** | `Functional` |
+| **NFR metric / target** | `- / -` |
+| **Dependencies** | epics `-`; stories `-`; ACs `-` |
+| **Required test layer** | `unit+integration` (min automated tests: `1`) |
+| **Framework / control tags** | `-` / `-` |
+| **Estimate (story points hint)** | `3` |
 | **Requirement (verbatim)** | Two-pass Athena emits separate trace spans `athena_generator_pass`, `athena_critic_pass` (Architecture §3.3, §23.1 Q5). |
-| **Objective** | Verify the behaviour described in AC-DG-08-002-01: Two-pass Athena emits separate trace spans `athena_generator_pass`, `athena_critic_pass` (Architecture §3.3, §23.1 Q5). |
+| **Objective** | Verify AC-DG-08-002-01: Two-pass Athena emits separate trace spans `athena_generator_pass`, `athena_critic_pass` (Architecture §3.3, §23.1 Q5). |
 | **Preconditions** | Tenant and scan fixtures exist; services healthy per test environment bootstrap. |
-| **Verification procedure** | 1. Arrange test data and configuration to match preconditions. \| 2. Execute the operation or graph path under test (single happy path unless AC implies negative). \| 3. Assert post-conditions against DB rows, API responses, object store metadata, queue state, or traces as applicable. |
-| **Expected result** | All assertions pass; no secret material in logs; stable machine-readable error_code on failures; state remains tenant-scoped for EPIC-DG-08. |
-| **Edge / negative focus** | Concurrent requests: no cross-tenant leakage and no duplicate side effects when idempotency applies. \| Timeout / partial failure: system reaches documented terminal or degraded state without data corruption. |
+| **Verification procedure** | 1. Arrange test data and configuration to match preconditions. \| 2. Execute the operation or graph/API path under test. \| 3. Assert post-conditions against DB rows, API responses, object store metadata, queue state, or traces. |
+| **Expected result** | Assertions pass; no secret material in logs; stable machine-readable error_code on failures; tenant isolation preserved for EPIC-DG-08. |
+| **Edge / negative focus** | Concurrent requests do not duplicate side effects; timeout/partial failures reach documented degraded or terminal states. |
 | **Primary automated test ID** | `TC-DG-08-002-01` |
 | **Secondary / negative test ID** | `TC-DG-08-002-01.2` |
-| **Automation hints** | pytest marker @pytest.mark.req("AC-DG-08-002-01") or Xray/TestRail key == ac_id |
+| **Automation hints** | pytest marker @pytest.mark.req("AC-DG-08-002-01") or Xray/TestRail key == AC-DG-08-002-01 |
 | **Spec references** | Architecture §3.3, §23.1 Q5 |
 
 #### Test specification — AC-DG-08-002-02
@@ -116,16 +143,25 @@ Expands each acceptance criterion for **QA authoring**, **pytest markers**, and 
 |-----------|---------------|
 | **Parent US** | `US-DG-08-002` |
 | **Parent EPIC** | `EPIC-DG-08` |
-| **Owning squad** | `compliance-engine` |
+| **Owning squad / role** | `compliance-engine` / `applied_ml_engineer` |
+| **Phase mapping** | primary `L10`; secondary `L11/L12` |
+| **Priority / release** | `P1` / `MVP` |
+| **MoSCoW** | `Should` |
+| **Requirement type** | `Functional` |
+| **NFR metric / target** | `- / -` |
+| **Dependencies** | epics `-`; stories `-`; ACs `-` |
+| **Required test layer** | `unit+integration` (min automated tests: `1`) |
+| **Framework / control tags** | `-` / `-` |
+| **Estimate (story points hint)** | `3` |
 | **Requirement (verbatim)** | Disagreements resolve to `UNCERTAIN` per reconcile rules (Architecture §3.3). |
-| **Objective** | Verify the behaviour described in AC-DG-08-002-02: Disagreements resolve to `UNCERTAIN` per reconcile rules (Architecture §3.3). |
+| **Objective** | Verify AC-DG-08-002-02: Disagreements resolve to `UNCERTAIN` per reconcile rules (Architecture §3.3). |
 | **Preconditions** | Tenant and scan fixtures exist; services healthy per test environment bootstrap. |
-| **Verification procedure** | 1. Arrange test data and configuration to match preconditions. \| 2. Execute the operation or graph path under test (single happy path unless AC implies negative). \| 3. Assert post-conditions against DB rows, API responses, object store metadata, queue state, or traces as applicable. |
-| **Expected result** | All assertions pass; no secret material in logs; stable machine-readable error_code on failures; state remains tenant-scoped for EPIC-DG-08. |
-| **Edge / negative focus** | Concurrent requests: no cross-tenant leakage and no duplicate side effects when idempotency applies. \| Timeout / partial failure: system reaches documented terminal or degraded state without data corruption. |
+| **Verification procedure** | 1. Arrange test data and configuration to match preconditions. \| 2. Execute the operation or graph/API path under test. \| 3. Assert post-conditions against DB rows, API responses, object store metadata, queue state, or traces. |
+| **Expected result** | Assertions pass; no secret material in logs; stable machine-readable error_code on failures; tenant isolation preserved for EPIC-DG-08. |
+| **Edge / negative focus** | Concurrent requests do not duplicate side effects; timeout/partial failures reach documented degraded or terminal states. |
 | **Primary automated test ID** | `TC-DG-08-002-02` |
 | **Secondary / negative test ID** | `TC-DG-08-002-02.2` |
-| **Automation hints** | pytest marker @pytest.mark.req("AC-DG-08-002-02") or Xray/TestRail key == ac_id |
+| **Automation hints** | pytest marker @pytest.mark.req("AC-DG-08-002-02") or Xray/TestRail key == AC-DG-08-002-02 |
 | **Spec references** | Architecture §3.3 |
 
 
@@ -151,7 +187,7 @@ Cloud ─● bucket policy s3:GetObject * (Cassandra)
 
 ### AC test specifications (US-DG-08-003)
 
-Expands each acceptance criterion for **QA authoring**, **pytest markers**, and **import into Xray/TestRail**.
+Expands each AC with phase, dependency, priority, NFR, test-layer, and traceability fields.
 
 #### Test specification — AC-DG-08-003-01
 
@@ -159,16 +195,25 @@ Expands each acceptance criterion for **QA authoring**, **pytest markers**, and 
 |-----------|---------------|
 | **Parent US** | `US-DG-08-003` |
 | **Parent EPIC** | `EPIC-DG-08` |
-| **Owning squad** | `compliance-engine` |
+| **Owning squad / role** | `compliance-engine` / `applied_ml_engineer` |
+| **Phase mapping** | primary `L10`; secondary `L11/L12` |
+| **Priority / release** | `P1` / `MVP` |
+| **MoSCoW** | `Should` |
+| **Requirement type** | `Functional` |
+| **NFR metric / target** | `- / -` |
+| **Dependencies** | epics `-`; stories `-`; ACs `-` |
+| **Required test layer** | `unit+integration` (min automated tests: `1`) |
+| **Framework / control tags** | `-` / `-` |
+| **Estimate (story points hint)** | `3` |
 | **Requirement (verbatim)** | `cross_layer_findings` list includes mapped frameworks + composite severity rationale (Architecture §3.4, §4.2). |
-| **Objective** | Verify the behaviour described in AC-DG-08-003-01: `cross_layer_findings` list includes mapped frameworks + composite severity rationale (Architecture §3.4, §4.2). |
+| **Objective** | Verify AC-DG-08-003-01: `cross_layer_findings` list includes mapped frameworks + composite severity rationale (Architecture §3.4, §4.2). |
 | **Preconditions** | Tenant and scan fixtures exist; services healthy per test environment bootstrap. |
-| **Verification procedure** | 1. Arrange test data and configuration to match preconditions. \| 2. Execute the operation or graph path under test (single happy path unless AC implies negative). \| 3. Assert post-conditions against DB rows, API responses, object store metadata, queue state, or traces as applicable. |
-| **Expected result** | All assertions pass; no secret material in logs; stable machine-readable error_code on failures; state remains tenant-scoped for EPIC-DG-08. |
-| **Edge / negative focus** | Concurrent requests: no cross-tenant leakage and no duplicate side effects when idempotency applies. \| Timeout / partial failure: system reaches documented terminal or degraded state without data corruption. |
+| **Verification procedure** | 1. Arrange test data and configuration to match preconditions. \| 2. Execute the operation or graph/API path under test. \| 3. Assert post-conditions against DB rows, API responses, object store metadata, queue state, or traces. |
+| **Expected result** | Assertions pass; no secret material in logs; stable machine-readable error_code on failures; tenant isolation preserved for EPIC-DG-08. |
+| **Edge / negative focus** | Concurrent requests do not duplicate side effects; timeout/partial failures reach documented degraded or terminal states. |
 | **Primary automated test ID** | `TC-DG-08-003-01` |
 | **Secondary / negative test ID** | `TC-DG-08-003-01.2` |
-| **Automation hints** | pytest marker @pytest.mark.req("AC-DG-08-003-01") or Xray/TestRail key == ac_id |
+| **Automation hints** | pytest marker @pytest.mark.req("AC-DG-08-003-01") or Xray/TestRail key == AC-DG-08-003-01 |
 | **Spec references** | Architecture §3.4, §4.2 |
 
 #### Test specification — AC-DG-08-003-02
@@ -177,16 +222,25 @@ Expands each acceptance criterion for **QA authoring**, **pytest markers**, and 
 |-----------|---------------|
 | **Parent US** | `US-DG-08-003` |
 | **Parent EPIC** | `EPIC-DG-08` |
-| **Owning squad** | `compliance-engine` |
+| **Owning squad / role** | `compliance-engine` / `applied_ml_engineer` |
+| **Phase mapping** | primary `L10`; secondary `L11/L12` |
+| **Priority / release** | `P1` / `MVP` |
+| **MoSCoW** | `Should` |
+| **Requirement type** | `Functional` |
+| **NFR metric / target** | `- / -` |
+| **Dependencies** | epics `-`; stories `-`; ACs `-` |
+| **Required test layer** | `unit+integration` (min automated tests: `1`) |
+| **Framework / control tags** | `-` / `-` |
+| **Estimate (story points hint)** | `5` |
 | **Requirement (verbatim)** | Executive report section highlights top cross-layer items (Architecture §18.1 item 7). |
-| **Objective** | Verify the behaviour described in AC-DG-08-003-02: Executive report section highlights top cross-layer items (Architecture §18.1 item 7). |
+| **Objective** | Verify AC-DG-08-003-02: Executive report section highlights top cross-layer items (Architecture §18.1 item 7). |
 | **Preconditions** | Tenant and scan fixtures exist; services healthy per test environment bootstrap. |
-| **Verification procedure** | 1. Arrange test data and configuration to match preconditions. \| 2. Execute the operation or graph path under test (single happy path unless AC implies negative). \| 3. Assert post-conditions against DB rows, API responses, object store metadata, queue state, or traces as applicable. |
-| **Expected result** | All assertions pass; no secret material in logs; stable machine-readable error_code on failures; state remains tenant-scoped for EPIC-DG-08. |
-| **Edge / negative focus** | Concurrent requests: no cross-tenant leakage and no duplicate side effects when idempotency applies. \| Timeout / partial failure: system reaches documented terminal or degraded state without data corruption. |
+| **Verification procedure** | 1. Arrange test data and configuration to match preconditions. \| 2. Execute the operation or graph/API path under test. \| 3. Assert post-conditions against DB rows, API responses, object store metadata, queue state, or traces. |
+| **Expected result** | Assertions pass; no secret material in logs; stable machine-readable error_code on failures; tenant isolation preserved for EPIC-DG-08. |
+| **Edge / negative focus** | Concurrent requests do not duplicate side effects; timeout/partial failures reach documented degraded or terminal states. |
 | **Primary automated test ID** | `TC-DG-08-003-02` |
 | **Secondary / negative test ID** | `TC-DG-08-003-02.2` |
-| **Automation hints** | pytest marker @pytest.mark.req("AC-DG-08-003-02") or Xray/TestRail key == ac_id |
+| **Automation hints** | pytest marker @pytest.mark.req("AC-DG-08-003-02") or Xray/TestRail key == AC-DG-08-003-02 |
 | **Spec references** | Architecture §18.1 item 7 |
 
 
@@ -203,7 +257,7 @@ Expands each acceptance criterion for **QA authoring**, **pytest markers**, and 
 
 ### AC test specifications (US-DG-08-004)
 
-Expands each acceptance criterion for **QA authoring**, **pytest markers**, and **import into Xray/TestRail**.
+Expands each AC with phase, dependency, priority, NFR, test-layer, and traceability fields.
 
 #### Test specification — AC-DG-08-004-01
 
@@ -211,16 +265,25 @@ Expands each acceptance criterion for **QA authoring**, **pytest markers**, and 
 |-----------|---------------|
 | **Parent US** | `US-DG-08-004` |
 | **Parent EPIC** | `EPIC-DG-08` |
-| **Owning squad** | `compliance-engine` |
+| **Owning squad / role** | `compliance-engine` / `applied_ml_engineer` |
+| **Phase mapping** | primary `L10`; secondary `L11/L12` |
+| **Priority / release** | `P1` / `MVP` |
+| **MoSCoW** | `Should` |
+| **Requirement type** | `Functional` |
+| **NFR metric / target** | `- / -` |
+| **Dependencies** | epics `-`; stories `-`; ACs `-` |
+| **Required test layer** | `unit+integration` (min automated tests: `1`) |
+| **Framework / control tags** | `-` / `-` |
+| **Estimate (story points hint)** | `3` |
 | **Requirement (verbatim)** | Batch size target 8–12 controls with clustering on `scope_tags` + embedding similarity (Architecture §31.3). |
-| **Objective** | Verify the behaviour described in AC-DG-08-004-01: Batch size target 8–12 controls with clustering on `scope_tags` + embedding similarity (Architecture §31.3). |
+| **Objective** | Verify AC-DG-08-004-01: Batch size target 8–12 controls with clustering on `scope_tags` + embedding similarity (Architecture §31.3). |
 | **Preconditions** | Tenant and scan fixtures exist; services healthy per test environment bootstrap. |
-| **Verification procedure** | 1. Arrange test data and configuration to match preconditions. \| 2. Execute the operation or graph path under test (single happy path unless AC implies negative). \| 3. Assert post-conditions against DB rows, API responses, object store metadata, queue state, or traces as applicable. |
-| **Expected result** | All assertions pass; no secret material in logs; stable machine-readable error_code on failures; state remains tenant-scoped for EPIC-DG-08. |
-| **Edge / negative focus** | Concurrent requests: no cross-tenant leakage and no duplicate side effects when idempotency applies. \| Timeout / partial failure: system reaches documented terminal or degraded state without data corruption. |
+| **Verification procedure** | 1. Arrange test data and configuration to match preconditions. \| 2. Execute the operation or graph/API path under test. \| 3. Assert post-conditions against DB rows, API responses, object store metadata, queue state, or traces. |
+| **Expected result** | Assertions pass; no secret material in logs; stable machine-readable error_code on failures; tenant isolation preserved for EPIC-DG-08. |
+| **Edge / negative focus** | Concurrent requests do not duplicate side effects; timeout/partial failures reach documented degraded or terminal states. |
 | **Primary automated test ID** | `TC-DG-08-004-01` |
 | **Secondary / negative test ID** | `TC-DG-08-004-01.2` |
-| **Automation hints** | pytest marker @pytest.mark.req("AC-DG-08-004-01") or Xray/TestRail key == ac_id |
+| **Automation hints** | pytest marker @pytest.mark.req("AC-DG-08-004-01") or Xray/TestRail key == AC-DG-08-004-01 |
 | **Spec references** | Architecture §31.3 |
 
 #### Test specification — AC-DG-08-004-02
@@ -229,16 +292,25 @@ Expands each acceptance criterion for **QA authoring**, **pytest markers**, and 
 |-----------|---------------|
 | **Parent US** | `US-DG-08-004` |
 | **Parent EPIC** | `EPIC-DG-08` |
-| **Owning squad** | `compliance-engine` |
+| **Owning squad / role** | `compliance-engine` / `applied_ml_engineer` |
+| **Phase mapping** | primary `L10`; secondary `L11/L12` |
+| **Priority / release** | `P1` / `MVP` |
+| **MoSCoW** | `Should` |
+| **Requirement type** | `Functional` |
+| **NFR metric / target** | `- / -` |
+| **Dependencies** | epics `-`; stories `-`; ACs `-` |
+| **Required test layer** | `unit+integration` (min automated tests: `1`) |
+| **Framework / control tags** | `-` / `-` |
+| **Estimate (story points hint)** | `3` |
 | **Requirement (verbatim)** | Feature flag `ATHENA_PER_CONTROL_SEND` defaults off (Architecture §23.1 Q1). |
-| **Objective** | Verify the behaviour described in AC-DG-08-004-02: Feature flag `ATHENA_PER_CONTROL_SEND` defaults off (Architecture §23.1 Q1). |
+| **Objective** | Verify AC-DG-08-004-02: Feature flag `ATHENA_PER_CONTROL_SEND` defaults off (Architecture §23.1 Q1). |
 | **Preconditions** | Tenant and scan fixtures exist; services healthy per test environment bootstrap. |
-| **Verification procedure** | 1. Arrange test data and configuration to match preconditions. \| 2. Execute the operation or graph path under test (single happy path unless AC implies negative). \| 3. Assert post-conditions against DB rows, API responses, object store metadata, queue state, or traces as applicable. |
-| **Expected result** | All assertions pass; no secret material in logs; stable machine-readable error_code on failures; state remains tenant-scoped for EPIC-DG-08. |
-| **Edge / negative focus** | Concurrent requests: no cross-tenant leakage and no duplicate side effects when idempotency applies. \| Timeout / partial failure: system reaches documented terminal or degraded state without data corruption. |
+| **Verification procedure** | 1. Arrange test data and configuration to match preconditions. \| 2. Execute the operation or graph/API path under test. \| 3. Assert post-conditions against DB rows, API responses, object store metadata, queue state, or traces. |
+| **Expected result** | Assertions pass; no secret material in logs; stable machine-readable error_code on failures; tenant isolation preserved for EPIC-DG-08. |
+| **Edge / negative focus** | Concurrent requests do not duplicate side effects; timeout/partial failures reach documented degraded or terminal states. |
 | **Primary automated test ID** | `TC-DG-08-004-02` |
 | **Secondary / negative test ID** | `TC-DG-08-004-02.2` |
-| **Automation hints** | pytest marker @pytest.mark.req("AC-DG-08-004-02") or Xray/TestRail key == ac_id |
+| **Automation hints** | pytest marker @pytest.mark.req("AC-DG-08-004-02") or Xray/TestRail key == AC-DG-08-004-02 |
 | **Spec references** | Architecture §23.1 Q1 |
 
 
@@ -255,7 +327,7 @@ Expands each acceptance criterion for **QA authoring**, **pytest markers**, and 
 
 ### AC test specifications (US-DG-08-005)
 
-Expands each acceptance criterion for **QA authoring**, **pytest markers**, and **import into Xray/TestRail**.
+Expands each AC with phase, dependency, priority, NFR, test-layer, and traceability fields.
 
 #### Test specification — AC-DG-08-005-01
 
@@ -263,16 +335,25 @@ Expands each acceptance criterion for **QA authoring**, **pytest markers**, and 
 |-----------|---------------|
 | **Parent US** | `US-DG-08-005` |
 | **Parent EPIC** | `EPIC-DG-08` |
-| **Owning squad** | `compliance-engine` |
+| **Owning squad / role** | `compliance-engine` / `applied_ml_engineer` |
+| **Phase mapping** | primary `L10`; secondary `L11/L12` |
+| **Priority / release** | `P1` / `MVP` |
+| **MoSCoW** | `Should` |
+| **Requirement type** | `Functional` |
+| **NFR metric / target** | `- / -` |
+| **Dependencies** | epics `-`; stories `-`; ACs `-` |
+| **Required test layer** | `unit+integration` (min automated tests: `1`) |
+| **Framework / control tags** | `-` / `-` |
+| **Estimate (story points hint)** | `3` |
 | **Requirement (verbatim)** | Evidence segments use boundary markers in prompts (Architecture §20.2). |
-| **Objective** | Verify the behaviour described in AC-DG-08-005-01: Evidence segments use boundary markers in prompts (Architecture §20.2). |
+| **Objective** | Verify AC-DG-08-005-01: Evidence segments use boundary markers in prompts (Architecture §20.2). |
 | **Preconditions** | Tenant and scan fixtures exist; services healthy per test environment bootstrap. |
-| **Verification procedure** | 1. Arrange test data and configuration to match preconditions. \| 2. Execute the operation or graph path under test (single happy path unless AC implies negative). \| 3. Assert post-conditions against DB rows, API responses, object store metadata, queue state, or traces as applicable. |
-| **Expected result** | All assertions pass; no secret material in logs; stable machine-readable error_code on failures; state remains tenant-scoped for EPIC-DG-08. |
-| **Edge / negative focus** | Concurrent requests: no cross-tenant leakage and no duplicate side effects when idempotency applies. \| Timeout / partial failure: system reaches documented terminal or degraded state without data corruption. |
+| **Verification procedure** | 1. Arrange test data and configuration to match preconditions. \| 2. Execute the operation or graph/API path under test. \| 3. Assert post-conditions against DB rows, API responses, object store metadata, queue state, or traces. |
+| **Expected result** | Assertions pass; no secret material in logs; stable machine-readable error_code on failures; tenant isolation preserved for EPIC-DG-08. |
+| **Edge / negative focus** | Concurrent requests do not duplicate side effects; timeout/partial failures reach documented degraded or terminal states. |
 | **Primary automated test ID** | `TC-DG-08-005-01` |
 | **Secondary / negative test ID** | `TC-DG-08-005-01.2` |
-| **Automation hints** | pytest marker @pytest.mark.req("AC-DG-08-005-01") or Xray/TestRail key == ac_id |
+| **Automation hints** | pytest marker @pytest.mark.req("AC-DG-08-005-01") or Xray/TestRail key == AC-DG-08-005-01 |
 | **Spec references** | Architecture §20.2 |
 
 #### Test specification — AC-DG-08-005-02
@@ -281,16 +362,25 @@ Expands each acceptance criterion for **QA authoring**, **pytest markers**, and 
 |-----------|---------------|
 | **Parent US** | `US-DG-08-005` |
 | **Parent EPIC** | `EPIC-DG-08` |
-| **Owning squad** | `compliance-engine` |
+| **Owning squad / role** | `compliance-engine` / `applied_ml_engineer` |
+| **Phase mapping** | primary `L10`; secondary `L11/L12` |
+| **Priority / release** | `P1` / `MVP` |
+| **MoSCoW** | `Should` |
+| **Requirement type** | `Functional` |
+| **NFR metric / target** | `- / -` |
+| **Dependencies** | epics `-`; stories `-`; ACs `-` |
+| **Required test layer** | `unit+integration` (min automated tests: `1`) |
+| **Framework / control tags** | `-` / `-` |
+| **Estimate (story points hint)** | `3` |
 | **Requirement (verbatim)** | Outputs parsed strictly to Pydantic models; free-form discarded (Architecture §6.4, §20.2). |
-| **Objective** | Verify the behaviour described in AC-DG-08-005-02: Outputs parsed strictly to Pydantic models; free-form discarded (Architecture §6.4, §20.2). |
+| **Objective** | Verify AC-DG-08-005-02: Outputs parsed strictly to Pydantic models; free-form discarded (Architecture §6.4, §20.2). |
 | **Preconditions** | Tenant and scan fixtures exist; services healthy per test environment bootstrap. |
-| **Verification procedure** | 1. Arrange test data and configuration to match preconditions. \| 2. Execute the operation or graph path under test (single happy path unless AC implies negative). \| 3. Assert post-conditions against DB rows, API responses, object store metadata, queue state, or traces as applicable. |
-| **Expected result** | All assertions pass; no secret material in logs; stable machine-readable error_code on failures; state remains tenant-scoped for EPIC-DG-08. |
-| **Edge / negative focus** | Concurrent requests: no cross-tenant leakage and no duplicate side effects when idempotency applies. \| Timeout / partial failure: system reaches documented terminal or degraded state without data corruption. |
+| **Verification procedure** | 1. Arrange test data and configuration to match preconditions. \| 2. Execute the operation or graph/API path under test. \| 3. Assert post-conditions against DB rows, API responses, object store metadata, queue state, or traces. |
+| **Expected result** | Assertions pass; no secret material in logs; stable machine-readable error_code on failures; tenant isolation preserved for EPIC-DG-08. |
+| **Edge / negative focus** | Concurrent requests do not duplicate side effects; timeout/partial failures reach documented degraded or terminal states. |
 | **Primary automated test ID** | `TC-DG-08-005-02` |
 | **Secondary / negative test ID** | `TC-DG-08-005-02.2` |
-| **Automation hints** | pytest marker @pytest.mark.req("AC-DG-08-005-02") or Xray/TestRail key == ac_id |
+| **Automation hints** | pytest marker @pytest.mark.req("AC-DG-08-005-02") or Xray/TestRail key == AC-DG-08-005-02 |
 | **Spec references** | Architecture §6.4, §20.2 |
 
 
@@ -317,7 +407,7 @@ Expands each acceptance criterion for **QA authoring**, **pytest markers**, and 
 
 ### AC test specifications (US-DG-08-006)
 
-Expands each acceptance criterion for **QA authoring**, **pytest markers**, and **import into Xray/TestRail**.
+Expands each AC with phase, dependency, priority, NFR, test-layer, and traceability fields.
 
 #### Test specification — AC-DG-08-006-01
 
@@ -325,16 +415,25 @@ Expands each acceptance criterion for **QA authoring**, **pytest markers**, and 
 |-----------|---------------|
 | **Parent US** | `US-DG-08-006` |
 | **Parent EPIC** | `EPIC-DG-08` |
-| **Owning squad** | `compliance-engine` |
+| **Owning squad / role** | `compliance-engine` / `applied_ml_engineer` |
+| **Phase mapping** | primary `L10`; secondary `L11/L12` |
+| **Priority / release** | `P1` / `MVP` |
+| **MoSCoW** | `Should` |
+| **Requirement type** | `Functional` |
+| **NFR metric / target** | `- / -` |
+| **Dependencies** | epics `-`; stories `-`; ACs `-` |
+| **Required test layer** | `unit+integration` (min automated tests: `1`) |
+| **Framework / control tags** | `-` / `-` |
+| **Estimate (story points hint)** | `3` |
 | **Requirement (verbatim)** | `compliance_summary` persisted with per-framework pass/fail/partial/NA counts (Architecture §4.2). |
-| **Objective** | Verify the behaviour described in AC-DG-08-006-01: `compliance_summary` persisted with per-framework pass/fail/partial/NA counts (Architecture §4.2). |
+| **Objective** | Verify AC-DG-08-006-01: `compliance_summary` persisted with per-framework pass/fail/partial/NA counts (Architecture §4.2). |
 | **Preconditions** | Tenant and scan fixtures exist; services healthy per test environment bootstrap. |
-| **Verification procedure** | 1. Arrange test data and configuration to match preconditions. \| 2. Execute the operation or graph path under test (single happy path unless AC implies negative). \| 3. Assert post-conditions against DB rows, API responses, object store metadata, queue state, or traces as applicable. |
-| **Expected result** | All assertions pass; no secret material in logs; stable machine-readable error_code on failures; state remains tenant-scoped for EPIC-DG-08. |
-| **Edge / negative focus** | Concurrent requests: no cross-tenant leakage and no duplicate side effects when idempotency applies. \| Timeout / partial failure: system reaches documented terminal or degraded state without data corruption. |
+| **Verification procedure** | 1. Arrange test data and configuration to match preconditions. \| 2. Execute the operation or graph/API path under test. \| 3. Assert post-conditions against DB rows, API responses, object store metadata, queue state, or traces. |
+| **Expected result** | Assertions pass; no secret material in logs; stable machine-readable error_code on failures; tenant isolation preserved for EPIC-DG-08. |
+| **Edge / negative focus** | Concurrent requests do not duplicate side effects; timeout/partial failures reach documented degraded or terminal states. |
 | **Primary automated test ID** | `TC-DG-08-006-01` |
 | **Secondary / negative test ID** | `TC-DG-08-006-01.2` |
-| **Automation hints** | pytest marker @pytest.mark.req("AC-DG-08-006-01") or Xray/TestRail key == ac_id |
+| **Automation hints** | pytest marker @pytest.mark.req("AC-DG-08-006-01") or Xray/TestRail key == AC-DG-08-006-01 |
 | **Spec references** | Architecture §4.2 |
 
 #### Test specification — AC-DG-08-006-02
@@ -343,16 +442,25 @@ Expands each acceptance criterion for **QA authoring**, **pytest markers**, and 
 |-----------|---------------|
 | **Parent US** | `US-DG-08-006` |
 | **Parent EPIC** | `EPIC-DG-08` |
-| **Owning squad** | `compliance-engine` |
+| **Owning squad / role** | `compliance-engine` / `applied_ml_engineer` |
+| **Phase mapping** | primary `L10`; secondary `L11/L12` |
+| **Priority / release** | `P1` / `MVP` |
+| **MoSCoW** | `Should` |
+| **Requirement type** | `Functional` |
+| **NFR metric / target** | `- / -` |
+| **Dependencies** | epics `-`; stories `-`; ACs `-` |
+| **Required test layer** | `unit+integration` (min automated tests: `1`) |
+| **Framework / control tags** | `-` / `-` |
+| **Estimate (story points hint)** | `3` |
 | **Requirement (verbatim)** | Scoring weights honour `severity_weight` on controls (Architecture §16.2). |
-| **Objective** | Verify the behaviour described in AC-DG-08-006-02: Scoring weights honour `severity_weight` on controls (Architecture §16.2). |
+| **Objective** | Verify AC-DG-08-006-02: Scoring weights honour `severity_weight` on controls (Architecture §16.2). |
 | **Preconditions** | Tenant and scan fixtures exist; services healthy per test environment bootstrap. |
-| **Verification procedure** | 1. Arrange test data and configuration to match preconditions. \| 2. Execute the operation or graph path under test (single happy path unless AC implies negative). \| 3. Assert post-conditions against DB rows, API responses, object store metadata, queue state, or traces as applicable. |
-| **Expected result** | All assertions pass; no secret material in logs; stable machine-readable error_code on failures; state remains tenant-scoped for EPIC-DG-08. |
-| **Edge / negative focus** | Concurrent requests: no cross-tenant leakage and no duplicate side effects when idempotency applies. \| Timeout / partial failure: system reaches documented terminal or degraded state without data corruption. |
+| **Verification procedure** | 1. Arrange test data and configuration to match preconditions. \| 2. Execute the operation or graph/API path under test. \| 3. Assert post-conditions against DB rows, API responses, object store metadata, queue state, or traces. |
+| **Expected result** | Assertions pass; no secret material in logs; stable machine-readable error_code on failures; tenant isolation preserved for EPIC-DG-08. |
+| **Edge / negative focus** | Concurrent requests do not duplicate side effects; timeout/partial failures reach documented degraded or terminal states. |
 | **Primary automated test ID** | `TC-DG-08-006-02` |
 | **Secondary / negative test ID** | `TC-DG-08-006-02.2` |
-| **Automation hints** | pytest marker @pytest.mark.req("AC-DG-08-006-02") or Xray/TestRail key == ac_id |
+| **Automation hints** | pytest marker @pytest.mark.req("AC-DG-08-006-02") or Xray/TestRail key == AC-DG-08-006-02 |
 | **Spec references** | Architecture §16.2 |
 
 #### Test specification — AC-DG-08-006-03
@@ -361,16 +469,25 @@ Expands each acceptance criterion for **QA authoring**, **pytest markers**, and 
 |-----------|---------------|
 | **Parent US** | `US-DG-08-006` |
 | **Parent EPIC** | `EPIC-DG-08` |
-| **Owning squad** | `compliance-engine` |
+| **Owning squad / role** | `compliance-engine` / `applied_ml_engineer` |
+| **Phase mapping** | primary `L10`; secondary `L11/L12` |
+| **Priority / release** | `P2` / `Post-MVP` |
+| **MoSCoW** | `Could` |
+| **Requirement type** | `Functional` |
+| **NFR metric / target** | `- / -` |
+| **Dependencies** | epics `-`; stories `-`; ACs `-` |
+| **Required test layer** | `unit+integration` (min automated tests: `1`) |
+| **Framework / control tags** | `-` / `-` |
+| **Estimate (story points hint)** | `2` |
 | **Requirement (verbatim)** | UNCERTAIN ratio >30% triggers report banner + optional webhook (Architecture §8.4). |
-| **Objective** | Verify the behaviour described in AC-DG-08-006-03: UNCERTAIN ratio >30% triggers report banner + optional webhook (Architecture §8.4). |
+| **Objective** | Verify AC-DG-08-006-03: UNCERTAIN ratio >30% triggers report banner + optional webhook (Architecture §8.4). |
 | **Preconditions** | Tenant and scan fixtures exist; services healthy per test environment bootstrap. |
-| **Verification procedure** | 1. Arrange test data and configuration to match preconditions. \| 2. Execute the operation or graph path under test (single happy path unless AC implies negative). \| 3. Assert post-conditions against DB rows, API responses, object store metadata, queue state, or traces as applicable. |
-| **Expected result** | All assertions pass; no secret material in logs; stable machine-readable error_code on failures; state remains tenant-scoped for EPIC-DG-08. |
-| **Edge / negative focus** | Concurrent requests: no cross-tenant leakage and no duplicate side effects when idempotency applies. \| Timeout / partial failure: system reaches documented terminal or degraded state without data corruption. \| Feature disabled path: behaviour is explicit no-op or skip with user-visible reason. |
+| **Verification procedure** | 1. Arrange test data and configuration to match preconditions. \| 2. Execute the operation or graph/API path under test. \| 3. Assert post-conditions against DB rows, API responses, object store metadata, queue state, or traces. |
+| **Expected result** | Assertions pass; no secret material in logs; stable machine-readable error_code on failures; tenant isolation preserved for EPIC-DG-08. |
+| **Edge / negative focus** | Concurrent requests do not duplicate side effects; timeout/partial failures reach documented degraded or terminal states. Feature-disabled path yields explicit skip/no-op behaviour. |
 | **Primary automated test ID** | `TC-DG-08-006-03` |
 | **Secondary / negative test ID** | `TC-DG-08-006-03.2` |
-| **Automation hints** | pytest marker @pytest.mark.req("AC-DG-08-006-03") or Xray/TestRail key == ac_id |
+| **Automation hints** | pytest marker @pytest.mark.req("AC-DG-08-006-03") or Xray/TestRail key == AC-DG-08-006-03 |
 | **Spec references** | Architecture §8.4 |
 
 
@@ -388,7 +505,7 @@ Expands each acceptance criterion for **QA authoring**, **pytest markers**, and 
 
 ### AC test specifications (US-DG-08-007)
 
-Expands each acceptance criterion for **QA authoring**, **pytest markers**, and **import into Xray/TestRail**.
+Expands each AC with phase, dependency, priority, NFR, test-layer, and traceability fields.
 
 #### Test specification — AC-DG-08-007-01
 
@@ -396,16 +513,25 @@ Expands each acceptance criterion for **QA authoring**, **pytest markers**, and 
 |-----------|---------------|
 | **Parent US** | `US-DG-08-007` |
 | **Parent EPIC** | `EPIC-DG-08` |
-| **Owning squad** | `compliance-engine` |
+| **Owning squad / role** | `compliance-engine` / `applied_ml_engineer` |
+| **Phase mapping** | primary `L10`; secondary `L11/L12` |
+| **Priority / release** | `P0` / `MVP` |
+| **MoSCoW** | `Must` |
+| **Requirement type** | `Functional` |
+| **NFR metric / target** | `- / -` |
+| **Dependencies** | epics `-`; stories `-`; ACs `-` |
+| **Required test layer** | `unit+integration` (min automated tests: `1`) |
+| **Framework / control tags** | `-` / `-` |
+| **Estimate (story points hint)** | `3` |
 | **Requirement (verbatim)** | `job_config.locale` or tenant default selects `zh`, `en`, `bilingual` modes (product schema). |
-| **Objective** | Verify the behaviour described in AC-DG-08-007-01: `job_config.locale` or tenant default selects `zh`, `en`, `bilingual` modes (product schema). |
+| **Objective** | Verify AC-DG-08-007-01: `job_config.locale` or tenant default selects `zh`, `en`, `bilingual` modes (product schema). |
 | **Preconditions** | Tenant and scan fixtures exist; services healthy per test environment bootstrap. |
-| **Verification procedure** | 1. Arrange test data and configuration to match preconditions. \| 2. Execute the operation or graph path under test (single happy path unless AC implies negative). \| 3. Assert post-conditions against DB rows, API responses, object store metadata, queue state, or traces as applicable. |
-| **Expected result** | All assertions pass; no secret material in logs; stable machine-readable error_code on failures; state remains tenant-scoped for EPIC-DG-08. |
-| **Edge / negative focus** | Concurrent requests: no cross-tenant leakage and no duplicate side effects when idempotency applies. \| Timeout / partial failure: system reaches documented terminal or degraded state without data corruption. |
+| **Verification procedure** | 1. Arrange test data and configuration to match preconditions. \| 2. Execute the operation or graph/API path under test. \| 3. Assert post-conditions against DB rows, API responses, object store metadata, queue state, or traces. |
+| **Expected result** | Assertions pass; no secret material in logs; stable machine-readable error_code on failures; tenant isolation preserved for EPIC-DG-08. |
+| **Edge / negative focus** | Concurrent requests do not duplicate side effects; timeout/partial failures reach documented degraded or terminal states. |
 | **Primary automated test ID** | `TC-DG-08-007-01` |
 | **Secondary / negative test ID** | `TC-DG-08-007-01.2` |
-| **Automation hints** | pytest marker @pytest.mark.req("AC-DG-08-007-01") or Xray/TestRail key == ac_id |
+| **Automation hints** | pytest marker @pytest.mark.req("AC-DG-08-007-01") or Xray/TestRail key == AC-DG-08-007-01 |
 | **Spec references** | Architecture_Design.md (see product spec) |
 
 #### Test specification — AC-DG-08-007-02
@@ -414,16 +540,25 @@ Expands each acceptance criterion for **QA authoring**, **pytest markers**, and 
 |-----------|---------------|
 | **Parent US** | `US-DG-08-007` |
 | **Parent EPIC** | `EPIC-DG-08` |
-| **Owning squad** | `compliance-engine` |
+| **Owning squad / role** | `compliance-engine` / `applied_ml_engineer` |
+| **Phase mapping** | primary `L10`; secondary `L11/L12` |
+| **Priority / release** | `P1` / `MVP` |
+| **MoSCoW** | `Should` |
+| **Requirement type** | `Functional` |
+| **NFR metric / target** | `- / -` |
+| **Dependencies** | epics `EPIC-DG-10`; stories `-`; ACs `-` |
+| **Required test layer** | `unit+integration` (min automated tests: `1`) |
+| **Framework / control tags** | `-` / `-` |
+| **Estimate (story points hint)** | `3` |
 | **Requirement (verbatim)** | Bilingual mode renders primary + secondary column in finding tables (EPIC-DG-10). |
-| **Objective** | Verify the behaviour described in AC-DG-08-007-02: Bilingual mode renders primary + secondary column in finding tables (EPIC-DG-10). |
+| **Objective** | Verify AC-DG-08-007-02: Bilingual mode renders primary + secondary column in finding tables (EPIC-DG-10). |
 | **Preconditions** | Tenant and scan fixtures exist; services healthy per test environment bootstrap. |
-| **Verification procedure** | 1. Arrange test data and configuration to match preconditions. \| 2. Execute the operation or graph path under test (single happy path unless AC implies negative). \| 3. Assert post-conditions against DB rows, API responses, object store metadata, queue state, or traces as applicable. |
-| **Expected result** | All assertions pass; no secret material in logs; stable machine-readable error_code on failures; state remains tenant-scoped for EPIC-DG-08. |
-| **Edge / negative focus** | Concurrent requests: no cross-tenant leakage and no duplicate side effects when idempotency applies. \| Timeout / partial failure: system reaches documented terminal or degraded state without data corruption. |
+| **Verification procedure** | 1. Arrange test data and configuration to match preconditions. \| 2. Execute the operation or graph/API path under test. \| 3. Assert post-conditions against DB rows, API responses, object store metadata, queue state, or traces. |
+| **Expected result** | Assertions pass; no secret material in logs; stable machine-readable error_code on failures; tenant isolation preserved for EPIC-DG-08. |
+| **Edge / negative focus** | Concurrent requests do not duplicate side effects; timeout/partial failures reach documented degraded or terminal states. |
 | **Primary automated test ID** | `TC-DG-08-007-02` |
 | **Secondary / negative test ID** | `TC-DG-08-007-02.2` |
-| **Automation hints** | pytest marker @pytest.mark.req("AC-DG-08-007-02") or Xray/TestRail key == ac_id |
+| **Automation hints** | pytest marker @pytest.mark.req("AC-DG-08-007-02") or Xray/TestRail key == AC-DG-08-007-02 |
 | **Spec references** | Architecture_Design.md (see product spec) |
 
 #### Test specification — AC-DG-08-007-03
@@ -432,16 +567,25 @@ Expands each acceptance criterion for **QA authoring**, **pytest markers**, and 
 |-----------|---------------|
 | **Parent US** | `US-DG-08-007` |
 | **Parent EPIC** | `EPIC-DG-08` |
-| **Owning squad** | `compliance-engine` |
+| **Owning squad / role** | `compliance-engine` / `applied_ml_engineer` |
+| **Phase mapping** | primary `L10`; secondary `L11/L12` |
+| **Priority / release** | `P1` / `MVP` |
+| **MoSCoW** | `Should` |
+| **Requirement type** | `Functional` |
+| **NFR metric / target** | `- / -` |
+| **Dependencies** | epics `-`; stories `-`; ACs `-` |
+| **Required test layer** | `unit+integration` (min automated tests: `1`) |
+| **Framework / control tags** | `-` / `-` |
+| **Estimate (story points hint)** | `3` |
 | **Requirement (verbatim)** | LLM routing prefers Qwen/DeepSeek for Chinese narrative when deployment requires (Architecture §13.1; Business doc §12). |
-| **Objective** | Verify the behaviour described in AC-DG-08-007-03: LLM routing prefers Qwen/DeepSeek for Chinese narrative when deployment requires (Architecture §13.1; Business doc §12). |
+| **Objective** | Verify AC-DG-08-007-03: LLM routing prefers Qwen/DeepSeek for Chinese narrative when deployment requires (Architecture §13.1; Business doc §12). |
 | **Preconditions** | Tenant and scan fixtures exist; services healthy per test environment bootstrap. |
-| **Verification procedure** | 1. Arrange test data and configuration to match preconditions. \| 2. Execute the operation or graph path under test (single happy path unless AC implies negative). \| 3. Assert post-conditions against DB rows, API responses, object store metadata, queue state, or traces as applicable. |
-| **Expected result** | All assertions pass; no secret material in logs; stable machine-readable error_code on failures; state remains tenant-scoped for EPIC-DG-08. |
-| **Edge / negative focus** | Concurrent requests: no cross-tenant leakage and no duplicate side effects when idempotency applies. \| Timeout / partial failure: system reaches documented terminal or degraded state without data corruption. \| Feature disabled path: behaviour is explicit no-op or skip with user-visible reason. |
+| **Verification procedure** | 1. Arrange test data and configuration to match preconditions. \| 2. Execute the operation or graph/API path under test. \| 3. Assert post-conditions against DB rows, API responses, object store metadata, queue state, or traces. |
+| **Expected result** | Assertions pass; no secret material in logs; stable machine-readable error_code on failures; tenant isolation preserved for EPIC-DG-08. |
+| **Edge / negative focus** | Concurrent requests do not duplicate side effects; timeout/partial failures reach documented degraded or terminal states. |
 | **Primary automated test ID** | `TC-DG-08-007-03` |
 | **Secondary / negative test ID** | `TC-DG-08-007-03.2` |
-| **Automation hints** | pytest marker @pytest.mark.req("AC-DG-08-007-03") or Xray/TestRail key == ac_id |
+| **Automation hints** | pytest marker @pytest.mark.req("AC-DG-08-007-03") or Xray/TestRail key == AC-DG-08-007-03 |
 | **Spec references** | Architecture §13.1; Business doc §12 |
 
 
@@ -459,7 +603,7 @@ Expands each acceptance criterion for **QA authoring**, **pytest markers**, and 
 
 ### AC test specifications (US-DG-08-008)
 
-Expands each acceptance criterion for **QA authoring**, **pytest markers**, and **import into Xray/TestRail**.
+Expands each AC with phase, dependency, priority, NFR, test-layer, and traceability fields.
 
 #### Test specification — AC-DG-08-008-01
 
@@ -467,16 +611,25 @@ Expands each acceptance criterion for **QA authoring**, **pytest markers**, and 
 |-----------|---------------|
 | **Parent US** | `US-DG-08-008` |
 | **Parent EPIC** | `EPIC-DG-08` |
-| **Owning squad** | `compliance-engine` |
+| **Owning squad / role** | `compliance-engine` / `applied_ml_engineer` |
+| **Phase mapping** | primary `L10`; secondary `L11/L12` |
+| **Priority / release** | `P1` / `MVP` |
+| **MoSCoW** | `Should` |
+| **Requirement type** | `Functional` |
+| **NFR metric / target** | `- / -` |
+| **Dependencies** | epics `-`; stories `-`; ACs `-` |
+| **Required test layer** | `unit+integration` (min automated tests: `1`) |
+| **Framework / control tags** | `-` / `-` |
+| **Estimate (story points hint)** | `3` |
 | **Requirement (verbatim)** | Athena code path uses MMR with documented lambda; falls back to plain top-K if disabled by flag. |
-| **Objective** | Verify the behaviour described in AC-DG-08-008-01: Athena code path uses MMR with documented lambda; falls back to plain top-K if disabled by flag. |
+| **Objective** | Verify AC-DG-08-008-01: Athena code path uses MMR with documented lambda; falls back to plain top-K if disabled by flag. |
 | **Preconditions** | Tenant and scan fixtures exist; services healthy per test environment bootstrap. |
-| **Verification procedure** | 1. Arrange test data and configuration to match preconditions. \| 2. Execute the operation or graph path under test (single happy path unless AC implies negative). \| 3. Assert post-conditions against DB rows, API responses, object store metadata, queue state, or traces as applicable. |
-| **Expected result** | All assertions pass; no secret material in logs; stable machine-readable error_code on failures; state remains tenant-scoped for EPIC-DG-08. |
-| **Edge / negative focus** | Concurrent requests: no cross-tenant leakage and no duplicate side effects when idempotency applies. \| Timeout / partial failure: system reaches documented terminal or degraded state without data corruption. |
+| **Verification procedure** | 1. Arrange test data and configuration to match preconditions. \| 2. Execute the operation or graph/API path under test. \| 3. Assert post-conditions against DB rows, API responses, object store metadata, queue state, or traces. |
+| **Expected result** | Assertions pass; no secret material in logs; stable machine-readable error_code on failures; tenant isolation preserved for EPIC-DG-08. |
+| **Edge / negative focus** | Concurrent requests do not duplicate side effects; timeout/partial failures reach documented degraded or terminal states. |
 | **Primary automated test ID** | `TC-DG-08-008-01` |
 | **Secondary / negative test ID** | `TC-DG-08-008-01.2` |
-| **Automation hints** | pytest marker @pytest.mark.req("AC-DG-08-008-01") or Xray/TestRail key == ac_id |
+| **Automation hints** | pytest marker @pytest.mark.req("AC-DG-08-008-01") or Xray/TestRail key == AC-DG-08-008-01 |
 | **Spec references** | Architecture_Design.md (see product spec) |
 
 #### Test specification — AC-DG-08-008-02
@@ -485,16 +638,25 @@ Expands each acceptance criterion for **QA authoring**, **pytest markers**, and 
 |-----------|---------------|
 | **Parent US** | `US-DG-08-008` |
 | **Parent EPIC** | `EPIC-DG-08` |
-| **Owning squad** | `compliance-engine` |
+| **Owning squad / role** | `compliance-engine` / `applied_ml_engineer` |
+| **Phase mapping** | primary `L10`; secondary `L11/L12` |
+| **Priority / release** | `P1` / `MVP` |
+| **MoSCoW** | `Should` |
+| **Requirement type** | `Functional` |
+| **NFR metric / target** | `- / -` |
+| **Dependencies** | epics `EPIC-DG-11`; stories `-`; ACs `-` |
+| **Required test layer** | `unit+integration` (min automated tests: `1`) |
+| **Framework / control tags** | `-` / `-` |
+| **Estimate (story points hint)** | `3` |
 | **Requirement (verbatim)** | Retrieved chunk ids logged in reasoning trace redacted excerpt metadata only (EPIC-DG-11). |
-| **Objective** | Verify the behaviour described in AC-DG-08-008-02: Retrieved chunk ids logged in reasoning trace redacted excerpt metadata only (EPIC-DG-11). |
+| **Objective** | Verify AC-DG-08-008-02: Retrieved chunk ids logged in reasoning trace redacted excerpt metadata only (EPIC-DG-11). |
 | **Preconditions** | Tenant and scan fixtures exist; services healthy per test environment bootstrap. |
-| **Verification procedure** | 1. Arrange test data and configuration to match preconditions. \| 2. Execute the operation or graph path under test (single happy path unless AC implies negative). \| 3. Assert post-conditions against DB rows, API responses, object store metadata, queue state, or traces as applicable. |
-| **Expected result** | All assertions pass; no secret material in logs; stable machine-readable error_code on failures; state remains tenant-scoped for EPIC-DG-08. |
-| **Edge / negative focus** | Concurrent requests: no cross-tenant leakage and no duplicate side effects when idempotency applies. \| Timeout / partial failure: system reaches documented terminal or degraded state without data corruption. |
+| **Verification procedure** | 1. Arrange test data and configuration to match preconditions. \| 2. Execute the operation or graph/API path under test. \| 3. Assert post-conditions against DB rows, API responses, object store metadata, queue state, or traces. |
+| **Expected result** | Assertions pass; no secret material in logs; stable machine-readable error_code on failures; tenant isolation preserved for EPIC-DG-08. |
+| **Edge / negative focus** | Concurrent requests do not duplicate side effects; timeout/partial failures reach documented degraded or terminal states. |
 | **Primary automated test ID** | `TC-DG-08-008-02` |
 | **Secondary / negative test ID** | `TC-DG-08-008-02.2` |
-| **Automation hints** | pytest marker @pytest.mark.req("AC-DG-08-008-02") or Xray/TestRail key == ac_id |
+| **Automation hints** | pytest marker @pytest.mark.req("AC-DG-08-008-02") or Xray/TestRail key == AC-DG-08-008-02 |
 | **Spec references** | Architecture_Design.md (see product spec) |
 
 #### Test specification — AC-DG-08-008-03
@@ -503,16 +665,25 @@ Expands each acceptance criterion for **QA authoring**, **pytest markers**, and 
 |-----------|---------------|
 | **Parent US** | `US-DG-08-008` |
 | **Parent EPIC** | `EPIC-DG-08` |
-| **Owning squad** | `compliance-engine` |
+| **Owning squad / role** | `compliance-engine` / `applied_ml_engineer` |
+| **Phase mapping** | primary `L10`; secondary `L11/L12` |
+| **Priority / release** | `P1` / `MVP` |
+| **MoSCoW** | `Should` |
+| **Requirement type** | `Functional` |
+| **NFR metric / target** | `- / -` |
+| **Dependencies** | epics `-`; stories `-`; ACs `-` |
+| **Required test layer** | `unit+integration` (min automated tests: `1`) |
+| **Framework / control tags** | `NIST` / `-` |
+| **Estimate (story points hint)** | `3` |
 | **Requirement (verbatim)** | Deterministic tie-break on chunk id ordering when scores tie (`temperature=0` path). |
-| **Objective** | Verify the behaviour described in AC-DG-08-008-03: Deterministic tie-break on chunk id ordering when scores tie (`temperature=0` path). |
+| **Objective** | Verify AC-DG-08-008-03: Deterministic tie-break on chunk id ordering when scores tie (`temperature=0` path). |
 | **Preconditions** | Tenant and scan fixtures exist; services healthy per test environment bootstrap. |
-| **Verification procedure** | 1. Arrange test data and configuration to match preconditions. \| 2. Execute the operation or graph path under test (single happy path unless AC implies negative). \| 3. Assert post-conditions against DB rows, API responses, object store metadata, queue state, or traces as applicable. |
-| **Expected result** | All assertions pass; no secret material in logs; stable machine-readable error_code on failures; state remains tenant-scoped for EPIC-DG-08. |
-| **Edge / negative focus** | Concurrent requests: no cross-tenant leakage and no duplicate side effects when idempotency applies. \| Timeout / partial failure: system reaches documented terminal or degraded state without data corruption. \| Feature disabled path: behaviour is explicit no-op or skip with user-visible reason. |
+| **Verification procedure** | 1. Arrange test data and configuration to match preconditions. \| 2. Execute the operation or graph/API path under test. \| 3. Assert post-conditions against DB rows, API responses, object store metadata, queue state, or traces. |
+| **Expected result** | Assertions pass; no secret material in logs; stable machine-readable error_code on failures; tenant isolation preserved for EPIC-DG-08. |
+| **Edge / negative focus** | Concurrent requests do not duplicate side effects; timeout/partial failures reach documented degraded or terminal states. |
 | **Primary automated test ID** | `TC-DG-08-008-03` |
 | **Secondary / negative test ID** | `TC-DG-08-008-03.2` |
-| **Automation hints** | pytest marker @pytest.mark.req("AC-DG-08-008-03") or Xray/TestRail key == ac_id |
+| **Automation hints** | pytest marker @pytest.mark.req("AC-DG-08-008-03") or Xray/TestRail key == AC-DG-08-008-03 |
 | **Spec references** | Architecture_Design.md (see product spec) |
 
 
@@ -530,7 +701,7 @@ Expands each acceptance criterion for **QA authoring**, **pytest markers**, and 
 
 ### AC test specifications (US-DG-08-009)
 
-Expands each acceptance criterion for **QA authoring**, **pytest markers**, and **import into Xray/TestRail**.
+Expands each AC with phase, dependency, priority, NFR, test-layer, and traceability fields.
 
 #### Test specification — AC-DG-08-009-01
 
@@ -538,16 +709,25 @@ Expands each acceptance criterion for **QA authoring**, **pytest markers**, and 
 |-----------|---------------|
 | **Parent US** | `US-DG-08-009` |
 | **Parent EPIC** | `EPIC-DG-08` |
-| **Owning squad** | `compliance-engine` |
+| **Owning squad / role** | `compliance-engine` / `applied_ml_engineer` |
+| **Phase mapping** | primary `L10`; secondary `L11/L12` |
+| **Priority / release** | `P1` / `MVP` |
+| **MoSCoW** | `Should` |
+| **Requirement type** | `Functional` |
+| **NFR metric / target** | `- / -` |
+| **Dependencies** | epics `-`; stories `-`; ACs `-` |
+| **Required test layer** | `unit+integration` (min automated tests: `1`) |
+| **Framework / control tags** | `-` / `-` |
+| **Estimate (story points hint)** | `3` |
 | **Requirement (verbatim)** | Failed batch increments `error_log` and can retry batch only without re-running completed batches (Architecture §31.3–31.4). |
-| **Objective** | Verify the behaviour described in AC-DG-08-009-01: Failed batch increments `error_log` and can retry batch only without re-running completed batches (Architecture §31.3–31.4). |
+| **Objective** | Verify AC-DG-08-009-01: Failed batch increments `error_log` and can retry batch only without re-running completed batches (Architecture §31.3–31.4). |
 | **Preconditions** | Tenant and scan fixtures exist; services healthy per test environment bootstrap. |
-| **Verification procedure** | 1. Arrange test data and configuration to match preconditions. \| 2. Execute the operation or graph path under test (single happy path unless AC implies negative). \| 3. Assert post-conditions against DB rows, API responses, object store metadata, queue state, or traces as applicable. |
-| **Expected result** | All assertions pass; no secret material in logs; stable machine-readable error_code on failures; state remains tenant-scoped for EPIC-DG-08. |
-| **Edge / negative focus** | Concurrent requests: no cross-tenant leakage and no duplicate side effects when idempotency applies. \| Timeout / partial failure: system reaches documented terminal or degraded state without data corruption. |
+| **Verification procedure** | 1. Arrange test data and configuration to match preconditions. \| 2. Execute the operation or graph/API path under test. \| 3. Assert post-conditions against DB rows, API responses, object store metadata, queue state, or traces. |
+| **Expected result** | Assertions pass; no secret material in logs; stable machine-readable error_code on failures; tenant isolation preserved for EPIC-DG-08. |
+| **Edge / negative focus** | Concurrent requests do not duplicate side effects; timeout/partial failures reach documented degraded or terminal states. |
 | **Primary automated test ID** | `TC-DG-08-009-01` |
 | **Secondary / negative test ID** | `TC-DG-08-009-01.2` |
-| **Automation hints** | pytest marker @pytest.mark.req("AC-DG-08-009-01") or Xray/TestRail key == ac_id |
+| **Automation hints** | pytest marker @pytest.mark.req("AC-DG-08-009-01") or Xray/TestRail key == AC-DG-08-009-01 |
 | **Spec references** | Architecture §31.3–31.4 |
 
 #### Test specification — AC-DG-08-009-02
@@ -556,16 +736,25 @@ Expands each acceptance criterion for **QA authoring**, **pytest markers**, and 
 |-----------|---------------|
 | **Parent US** | `US-DG-08-009` |
 | **Parent EPIC** | `EPIC-DG-08` |
-| **Owning squad** | `compliance-engine` |
+| **Owning squad / role** | `compliance-engine` / `applied_ml_engineer` |
+| **Phase mapping** | primary `L10`; secondary `L11/L12` |
+| **Priority / release** | `P1` / `MVP` |
+| **MoSCoW** | `Should` |
+| **Requirement type** | `Functional` |
+| **NFR metric / target** | `- / -` |
+| **Dependencies** | epics `-`; stories `-`; ACs `-` |
+| **Required test layer** | `unit+integration` (min automated tests: `1`) |
+| **Framework / control tags** | `-` / `-` |
+| **Estimate (story points hint)** | `3` |
 | **Requirement (verbatim)** | After max batch retries, remaining controls marked `UNCERTAIN` with explicit reason code. |
-| **Objective** | Verify the behaviour described in AC-DG-08-009-02: After max batch retries, remaining controls marked `UNCERTAIN` with explicit reason code. |
+| **Objective** | Verify AC-DG-08-009-02: After max batch retries, remaining controls marked `UNCERTAIN` with explicit reason code. |
 | **Preconditions** | Tenant and scan fixtures exist; services healthy per test environment bootstrap. |
-| **Verification procedure** | 1. Arrange test data and configuration to match preconditions. \| 2. Execute the operation or graph path under test (single happy path unless AC implies negative). \| 3. Assert post-conditions against DB rows, API responses, object store metadata, queue state, or traces as applicable. |
-| **Expected result** | All assertions pass; no secret material in logs; stable machine-readable error_code on failures; state remains tenant-scoped for EPIC-DG-08. |
-| **Edge / negative focus** | Concurrent requests: no cross-tenant leakage and no duplicate side effects when idempotency applies. \| Timeout / partial failure: system reaches documented terminal or degraded state without data corruption. |
+| **Verification procedure** | 1. Arrange test data and configuration to match preconditions. \| 2. Execute the operation or graph/API path under test. \| 3. Assert post-conditions against DB rows, API responses, object store metadata, queue state, or traces. |
+| **Expected result** | Assertions pass; no secret material in logs; stable machine-readable error_code on failures; tenant isolation preserved for EPIC-DG-08. |
+| **Edge / negative focus** | Concurrent requests do not duplicate side effects; timeout/partial failures reach documented degraded or terminal states. |
 | **Primary automated test ID** | `TC-DG-08-009-02` |
 | **Secondary / negative test ID** | `TC-DG-08-009-02.2` |
-| **Automation hints** | pytest marker @pytest.mark.req("AC-DG-08-009-02") or Xray/TestRail key == ac_id |
+| **Automation hints** | pytest marker @pytest.mark.req("AC-DG-08-009-02") or Xray/TestRail key == AC-DG-08-009-02 |
 | **Spec references** | Architecture_Design.md (see product spec) |
 
 #### Test specification — AC-DG-08-009-03
@@ -574,16 +763,25 @@ Expands each acceptance criterion for **QA authoring**, **pytest markers**, and 
 |-----------|---------------|
 | **Parent US** | `US-DG-08-009` |
 | **Parent EPIC** | `EPIC-DG-08` |
-| **Owning squad** | `compliance-engine` |
+| **Owning squad / role** | `compliance-engine` / `applied_ml_engineer` |
+| **Phase mapping** | primary `L10`; secondary `L11/L12` |
+| **Priority / release** | `P1` / `MVP` |
+| **MoSCoW** | `Should` |
+| **Requirement type** | `Functional` |
+| **NFR metric / target** | `- / -` |
+| **Dependencies** | epics `EPIC-DG-01`; stories `-`; ACs `-` |
+| **Required test layer** | `unit+integration` (min automated tests: `1`) |
+| **Framework / control tags** | `-` / `-` |
+| **Estimate (story points hint)** | `3` |
 | **Requirement (verbatim)** | Checkpoint state after each successful batch is durable (EPIC-DG-01). |
-| **Objective** | Verify the behaviour described in AC-DG-08-009-03: Checkpoint state after each successful batch is durable (EPIC-DG-01). |
+| **Objective** | Verify AC-DG-08-009-03: Checkpoint state after each successful batch is durable (EPIC-DG-01). |
 | **Preconditions** | Tenant and scan fixtures exist; services healthy per test environment bootstrap. |
-| **Verification procedure** | 1. Arrange test data and configuration to match preconditions. \| 2. Execute the operation or graph path under test (single happy path unless AC implies negative). \| 3. Assert post-conditions against DB rows, API responses, object store metadata, queue state, or traces as applicable. |
-| **Expected result** | All assertions pass; no secret material in logs; stable machine-readable error_code on failures; state remains tenant-scoped for EPIC-DG-08. |
-| **Edge / negative focus** | Concurrent requests: no cross-tenant leakage and no duplicate side effects when idempotency applies. \| Timeout / partial failure: system reaches documented terminal or degraded state without data corruption. |
+| **Verification procedure** | 1. Arrange test data and configuration to match preconditions. \| 2. Execute the operation or graph/API path under test. \| 3. Assert post-conditions against DB rows, API responses, object store metadata, queue state, or traces. |
+| **Expected result** | Assertions pass; no secret material in logs; stable machine-readable error_code on failures; tenant isolation preserved for EPIC-DG-08. |
+| **Edge / negative focus** | Concurrent requests do not duplicate side effects; timeout/partial failures reach documented degraded or terminal states. |
 | **Primary automated test ID** | `TC-DG-08-009-03` |
 | **Secondary / negative test ID** | `TC-DG-08-009-03.2` |
-| **Automation hints** | pytest marker @pytest.mark.req("AC-DG-08-009-03") or Xray/TestRail key == ac_id |
+| **Automation hints** | pytest marker @pytest.mark.req("AC-DG-08-009-03") or Xray/TestRail key == AC-DG-08-009-03 |
 | **Spec references** | Architecture_Design.md (see product spec) |
 
 
@@ -601,7 +799,7 @@ Expands each acceptance criterion for **QA authoring**, **pytest markers**, and 
 
 ### AC test specifications (US-DG-08-010)
 
-Expands each acceptance criterion for **QA authoring**, **pytest markers**, and **import into Xray/TestRail**.
+Expands each AC with phase, dependency, priority, NFR, test-layer, and traceability fields.
 
 #### Test specification — AC-DG-08-010-01
 
@@ -609,16 +807,25 @@ Expands each acceptance criterion for **QA authoring**, **pytest markers**, and 
 |-----------|---------------|
 | **Parent US** | `US-DG-08-010` |
 | **Parent EPIC** | `EPIC-DG-08` |
-| **Owning squad** | `compliance-engine` |
+| **Owning squad / role** | `compliance-engine` / `applied_ml_engineer` |
+| **Phase mapping** | primary `L10`; secondary `L11/L12` |
+| **Priority / release** | `P1` / `MVP` |
+| **MoSCoW** | `Should` |
+| **Requirement type** | `Functional` |
+| **NFR metric / target** | `- / -` |
+| **Dependencies** | epics `-`; stories `-`; ACs `-` |
+| **Required test layer** | `unit+integration` (min automated tests: `1`) |
+| **Framework / control tags** | `-` / `-` |
+| **Estimate (story points hint)** | `3` |
 | **Requirement (verbatim)** | NA requires `na_reason` enum + short text; empty NA rejected by schema. |
-| **Objective** | Verify the behaviour described in AC-DG-08-010-01: NA requires `na_reason` enum + short text; empty NA rejected by schema. |
+| **Objective** | Verify AC-DG-08-010-01: NA requires `na_reason` enum + short text; empty NA rejected by schema. |
 | **Preconditions** | Tenant and scan fixtures exist; services healthy per test environment bootstrap. |
-| **Verification procedure** | 1. Arrange test data and configuration to match preconditions. \| 2. Execute the operation or graph path under test (single happy path unless AC implies negative). \| 3. Assert post-conditions against DB rows, API responses, object store metadata, queue state, or traces as applicable. \| 4. Repeat with invalid input or unauthorised actor and assert stable error_code / no side effects. |
-| **Expected result** | All assertions pass; no secret material in logs; stable machine-readable error_code on failures; state remains tenant-scoped for EPIC-DG-08. |
-| **Edge / negative focus** | Concurrent requests: no cross-tenant leakage and no duplicate side effects when idempotency applies. \| Timeout / partial failure: system reaches documented terminal or degraded state without data corruption. |
+| **Verification procedure** | 1. Arrange test data and configuration to match preconditions. \| 2. Execute the operation or graph/API path under test. \| 3. Assert post-conditions against DB rows, API responses, object store metadata, queue state, or traces. \| 4. Execute negative path and assert stable error_code with no side effects. |
+| **Expected result** | Assertions pass; no secret material in logs; stable machine-readable error_code on failures; tenant isolation preserved for EPIC-DG-08. |
+| **Edge / negative focus** | Concurrent requests do not duplicate side effects; timeout/partial failures reach documented degraded or terminal states. |
 | **Primary automated test ID** | `TC-DG-08-010-01` |
 | **Secondary / negative test ID** | `TC-DG-08-010-01.2` |
-| **Automation hints** | pytest marker @pytest.mark.req("AC-DG-08-010-01") or Xray/TestRail key == ac_id |
+| **Automation hints** | pytest marker @pytest.mark.req("AC-DG-08-010-01") or Xray/TestRail key == AC-DG-08-010-01 |
 | **Spec references** | Architecture_Design.md (see product spec) |
 
 #### Test specification — AC-DG-08-010-02
@@ -627,16 +834,25 @@ Expands each acceptance criterion for **QA authoring**, **pytest markers**, and 
 |-----------|---------------|
 | **Parent US** | `US-DG-08-010` |
 | **Parent EPIC** | `EPIC-DG-08` |
-| **Owning squad** | `compliance-engine` |
+| **Owning squad / role** | `compliance-engine` / `applied_ml_engineer` |
+| **Phase mapping** | primary `L10`; secondary `L11/L12` |
+| **Priority / release** | `P1` / `MVP` |
+| **MoSCoW** | `Should` |
+| **Requirement type** | `Functional` |
+| **NFR metric / target** | `- / -` |
+| **Dependencies** | epics `-`; stories `-`; ACs `-` |
+| **Required test layer** | `unit+integration` (min automated tests: `1`) |
+| **Framework / control tags** | `-` / `-` |
+| **Estimate (story points hint)** | `3` |
 | **Requirement (verbatim)** | Layer relevance from `PolicyControl` respected — e.g. pure cloud control skips code-only evidence requirement (Architecture §16.2). |
-| **Objective** | Verify the behaviour described in AC-DG-08-010-02: Layer relevance from `PolicyControl` respected — e.g. pure cloud control skips code-only evidence requirement (Architecture §16.2). |
+| **Objective** | Verify AC-DG-08-010-02: Layer relevance from `PolicyControl` respected — e.g. pure cloud control skips code-only evidence requirement (Architecture §16.2). |
 | **Preconditions** | Tenant and scan fixtures exist; services healthy per test environment bootstrap. |
-| **Verification procedure** | 1. Arrange test data and configuration to match preconditions. \| 2. Execute the operation or graph path under test (single happy path unless AC implies negative). \| 3. Assert post-conditions against DB rows, API responses, object store metadata, queue state, or traces as applicable. |
-| **Expected result** | All assertions pass; no secret material in logs; stable machine-readable error_code on failures; state remains tenant-scoped for EPIC-DG-08. |
-| **Edge / negative focus** | Concurrent requests: no cross-tenant leakage and no duplicate side effects when idempotency applies. \| Timeout / partial failure: system reaches documented terminal or degraded state without data corruption. |
+| **Verification procedure** | 1. Arrange test data and configuration to match preconditions. \| 2. Execute the operation or graph/API path under test. \| 3. Assert post-conditions against DB rows, API responses, object store metadata, queue state, or traces. |
+| **Expected result** | Assertions pass; no secret material in logs; stable machine-readable error_code on failures; tenant isolation preserved for EPIC-DG-08. |
+| **Edge / negative focus** | Concurrent requests do not duplicate side effects; timeout/partial failures reach documented degraded or terminal states. |
 | **Primary automated test ID** | `TC-DG-08-010-02` |
 | **Secondary / negative test ID** | `TC-DG-08-010-02.2` |
-| **Automation hints** | pytest marker @pytest.mark.req("AC-DG-08-010-02") or Xray/TestRail key == ac_id |
+| **Automation hints** | pytest marker @pytest.mark.req("AC-DG-08-010-02") or Xray/TestRail key == AC-DG-08-010-02 |
 | **Spec references** | Architecture §16.2 |
 
 #### Test specification — AC-DG-08-010-03
@@ -645,16 +861,25 @@ Expands each acceptance criterion for **QA authoring**, **pytest markers**, and 
 |-----------|---------------|
 | **Parent US** | `US-DG-08-010` |
 | **Parent EPIC** | `EPIC-DG-08` |
-| **Owning squad** | `compliance-engine` |
+| **Owning squad / role** | `compliance-engine` / `applied_ml_engineer` |
+| **Phase mapping** | primary `L10`; secondary `L11/L12` |
+| **Priority / release** | `P1` / `MVP` |
+| **MoSCoW** | `Should` |
+| **Requirement type** | `Functional` |
+| **NFR metric / target** | `- / -` |
+| **Dependencies** | epics `-`; stories `-`; ACs `-` |
+| **Required test layer** | `unit+integration` (min automated tests: `1`) |
+| **Framework / control tags** | `-` / `-` |
+| **Estimate (story points hint)** | `3` |
 | **Requirement (verbatim)** | NA rate anomalies (>40% in a framework) flagged for product review dataset (eval hook). |
-| **Objective** | Verify the behaviour described in AC-DG-08-010-03: NA rate anomalies (>40% in a framework) flagged for product review dataset (eval hook). |
+| **Objective** | Verify AC-DG-08-010-03: NA rate anomalies (>40% in a framework) flagged for product review dataset (eval hook). |
 | **Preconditions** | Tenant and scan fixtures exist; services healthy per test environment bootstrap. |
-| **Verification procedure** | 1. Arrange test data and configuration to match preconditions. \| 2. Execute the operation or graph path under test (single happy path unless AC implies negative). \| 3. Assert post-conditions against DB rows, API responses, object store metadata, queue state, or traces as applicable. |
-| **Expected result** | All assertions pass; no secret material in logs; stable machine-readable error_code on failures; state remains tenant-scoped for EPIC-DG-08. |
-| **Edge / negative focus** | Concurrent requests: no cross-tenant leakage and no duplicate side effects when idempotency applies. \| Timeout / partial failure: system reaches documented terminal or degraded state without data corruption. |
+| **Verification procedure** | 1. Arrange test data and configuration to match preconditions. \| 2. Execute the operation or graph/API path under test. \| 3. Assert post-conditions against DB rows, API responses, object store metadata, queue state, or traces. |
+| **Expected result** | Assertions pass; no secret material in logs; stable machine-readable error_code on failures; tenant isolation preserved for EPIC-DG-08. |
+| **Edge / negative focus** | Concurrent requests do not duplicate side effects; timeout/partial failures reach documented degraded or terminal states. |
 | **Primary automated test ID** | `TC-DG-08-010-03` |
 | **Secondary / negative test ID** | `TC-DG-08-010-03.2` |
-| **Automation hints** | pytest marker @pytest.mark.req("AC-DG-08-010-03") or Xray/TestRail key == ac_id |
+| **Automation hints** | pytest marker @pytest.mark.req("AC-DG-08-010-03") or Xray/TestRail key == AC-DG-08-010-03 |
 | **Spec references** | Architecture_Design.md (see product spec) |
 
 
@@ -672,7 +897,7 @@ Expands each acceptance criterion for **QA authoring**, **pytest markers**, and 
 
 ### AC test specifications (US-DG-08-011)
 
-Expands each acceptance criterion for **QA authoring**, **pytest markers**, and **import into Xray/TestRail**.
+Expands each AC with phase, dependency, priority, NFR, test-layer, and traceability fields.
 
 #### Test specification — AC-DG-08-011-01
 
@@ -680,16 +905,25 @@ Expands each acceptance criterion for **QA authoring**, **pytest markers**, and 
 |-----------|---------------|
 | **Parent US** | `US-DG-08-011` |
 | **Parent EPIC** | `EPIC-DG-08` |
-| **Owning squad** | `compliance-engine` |
+| **Owning squad / role** | `compliance-engine` / `applied_ml_engineer` |
+| **Phase mapping** | primary `L10`; secondary `L11/L12` |
+| **Priority / release** | `P1` / `MVP` |
+| **MoSCoW** | `Should` |
+| **Requirement type** | `Functional` |
+| **NFR metric / target** | `- / -` |
+| **Dependencies** | epics `-`; stories `-`; ACs `-` |
+| **Required test layer** | `unit+integration` (min automated tests: `1`) |
+| **Framework / control tags** | `-` / `-` |
+| **Estimate (story points hint)** | `3` |
 | **Requirement (verbatim)** | Finding schema includes machine-readable evidence grade (e.g. `direct_code_ref`, `config_only`, `heuristic`). |
-| **Objective** | Verify the behaviour described in AC-DG-08-011-01: Finding schema includes machine-readable evidence grade (e.g. `direct_code_ref`, `config_only`, `heuristic`). |
+| **Objective** | Verify AC-DG-08-011-01: Finding schema includes machine-readable evidence grade (e.g. `direct_code_ref`, `config_only`, `heuristic`). |
 | **Preconditions** | Tenant and scan fixtures exist; services healthy per test environment bootstrap. |
-| **Verification procedure** | 1. Arrange test data and configuration to match preconditions. \| 2. Execute the operation or graph path under test (single happy path unless AC implies negative). \| 3. Assert post-conditions against DB rows, API responses, object store metadata, queue state, or traces as applicable. |
-| **Expected result** | All assertions pass; no secret material in logs; stable machine-readable error_code on failures; state remains tenant-scoped for EPIC-DG-08. |
-| **Edge / negative focus** | Concurrent requests: no cross-tenant leakage and no duplicate side effects when idempotency applies. \| Timeout / partial failure: system reaches documented terminal or degraded state without data corruption. |
+| **Verification procedure** | 1. Arrange test data and configuration to match preconditions. \| 2. Execute the operation or graph/API path under test. \| 3. Assert post-conditions against DB rows, API responses, object store metadata, queue state, or traces. |
+| **Expected result** | Assertions pass; no secret material in logs; stable machine-readable error_code on failures; tenant isolation preserved for EPIC-DG-08. |
+| **Edge / negative focus** | Concurrent requests do not duplicate side effects; timeout/partial failures reach documented degraded or terminal states. |
 | **Primary automated test ID** | `TC-DG-08-011-01` |
 | **Secondary / negative test ID** | `TC-DG-08-011-01.2` |
-| **Automation hints** | pytest marker @pytest.mark.req("AC-DG-08-011-01") or Xray/TestRail key == ac_id |
+| **Automation hints** | pytest marker @pytest.mark.req("AC-DG-08-011-01") or Xray/TestRail key == AC-DG-08-011-01 |
 | **Spec references** | Architecture_Design.md (see product spec) |
 
 #### Test specification — AC-DG-08-011-02
@@ -698,16 +932,25 @@ Expands each acceptance criterion for **QA authoring**, **pytest markers**, and 
 |-----------|---------------|
 | **Parent US** | `US-DG-08-011` |
 | **Parent EPIC** | `EPIC-DG-08` |
-| **Owning squad** | `compliance-engine` |
+| **Owning squad / role** | `compliance-engine` / `applied_ml_engineer` |
+| **Phase mapping** | primary `L10`; secondary `L11/L12` |
+| **Priority / release** | `P1` / `MVP` |
+| **MoSCoW** | `Should` |
+| **Requirement type** | `Functional` |
+| **NFR metric / target** | `- / -` |
+| **Dependencies** | epics `-`; stories `-`; ACs `-` |
+| **Required test layer** | `unit+integration` (min automated tests: `1`) |
+| **Framework / control tags** | `-` / `-` |
+| **Estimate (story points hint)** | `5` |
 | **Requirement (verbatim)** | Cross-layer findings require ≥2 layers’ evidence refs or downgrade severity (Architecture §3.4 spirit). |
-| **Objective** | Verify the behaviour described in AC-DG-08-011-02: Cross-layer findings require ≥2 layers’ evidence refs or downgrade severity (Architecture §3.4 spirit). |
+| **Objective** | Verify AC-DG-08-011-02: Cross-layer findings require ≥2 layers’ evidence refs or downgrade severity (Architecture §3.4 spirit). |
 | **Preconditions** | Tenant and scan fixtures exist; services healthy per test environment bootstrap. |
-| **Verification procedure** | 1. Arrange test data and configuration to match preconditions. \| 2. Execute the operation or graph path under test (single happy path unless AC implies negative). \| 3. Assert post-conditions against DB rows, API responses, object store metadata, queue state, or traces as applicable. |
-| **Expected result** | All assertions pass; no secret material in logs; stable machine-readable error_code on failures; state remains tenant-scoped for EPIC-DG-08. |
-| **Edge / negative focus** | Concurrent requests: no cross-tenant leakage and no duplicate side effects when idempotency applies. \| Timeout / partial failure: system reaches documented terminal or degraded state without data corruption. |
+| **Verification procedure** | 1. Arrange test data and configuration to match preconditions. \| 2. Execute the operation or graph/API path under test. \| 3. Assert post-conditions against DB rows, API responses, object store metadata, queue state, or traces. |
+| **Expected result** | Assertions pass; no secret material in logs; stable machine-readable error_code on failures; tenant isolation preserved for EPIC-DG-08. |
+| **Edge / negative focus** | Concurrent requests do not duplicate side effects; timeout/partial failures reach documented degraded or terminal states. |
 | **Primary automated test ID** | `TC-DG-08-011-02` |
 | **Secondary / negative test ID** | `TC-DG-08-011-02.2` |
-| **Automation hints** | pytest marker @pytest.mark.req("AC-DG-08-011-02") or Xray/TestRail key == ac_id |
+| **Automation hints** | pytest marker @pytest.mark.req("AC-DG-08-011-02") or Xray/TestRail key == AC-DG-08-011-02 |
 | **Spec references** | Architecture §3.4 spirit |
 
 #### Test specification — AC-DG-08-011-03
@@ -716,16 +959,25 @@ Expands each acceptance criterion for **QA authoring**, **pytest markers**, and 
 |-----------|---------------|
 | **Parent US** | `US-DG-08-011` |
 | **Parent EPIC** | `EPIC-DG-08` |
-| **Owning squad** | `compliance-engine` |
+| **Owning squad / role** | `compliance-engine` / `applied_ml_engineer` |
+| **Phase mapping** | primary `L10`; secondary `L11/L12` |
+| **Priority / release** | `P1` / `MVP` |
+| **MoSCoW** | `Should` |
+| **Requirement type** | `Functional` |
+| **NFR metric / target** | `- / -` |
+| **Dependencies** | epics `EPIC-DG-12`; stories `-`; ACs `-` |
+| **Required test layer** | `unit+integration` (min automated tests: `1`) |
+| **Framework / control tags** | `-` / `-` |
+| **Estimate (story points hint)** | `3` |
 | **Requirement (verbatim)** | UI and API expose same field (EPIC-DG-12). |
-| **Objective** | Verify the behaviour described in AC-DG-08-011-03: UI and API expose same field (EPIC-DG-12). |
+| **Objective** | Verify AC-DG-08-011-03: UI and API expose same field (EPIC-DG-12). |
 | **Preconditions** | Tenant and scan fixtures exist; services healthy per test environment bootstrap. |
-| **Verification procedure** | 1. Arrange test data and configuration to match preconditions. \| 2. Execute the operation or graph path under test (single happy path unless AC implies negative). \| 3. Assert post-conditions against DB rows, API responses, object store metadata, queue state, or traces as applicable. |
-| **Expected result** | All assertions pass; no secret material in logs; stable machine-readable error_code on failures; state remains tenant-scoped for EPIC-DG-08. |
-| **Edge / negative focus** | Concurrent requests: no cross-tenant leakage and no duplicate side effects when idempotency applies. \| Timeout / partial failure: system reaches documented terminal or degraded state without data corruption. |
+| **Verification procedure** | 1. Arrange test data and configuration to match preconditions. \| 2. Execute the operation or graph/API path under test. \| 3. Assert post-conditions against DB rows, API responses, object store metadata, queue state, or traces. |
+| **Expected result** | Assertions pass; no secret material in logs; stable machine-readable error_code on failures; tenant isolation preserved for EPIC-DG-08. |
+| **Edge / negative focus** | Concurrent requests do not duplicate side effects; timeout/partial failures reach documented degraded or terminal states. |
 | **Primary automated test ID** | `TC-DG-08-011-03` |
 | **Secondary / negative test ID** | `TC-DG-08-011-03.2` |
-| **Automation hints** | pytest marker @pytest.mark.req("AC-DG-08-011-03") or Xray/TestRail key == ac_id |
+| **Automation hints** | pytest marker @pytest.mark.req("AC-DG-08-011-03") or Xray/TestRail key == AC-DG-08-011-03 |
 | **Spec references** | Architecture_Design.md (see product spec) |
 
 
@@ -741,7 +993,7 @@ Expands each acceptance criterion for **QA authoring**, **pytest markers**, and 
 
 ### AC test specifications (US-DG-08-012)
 
-Expands each acceptance criterion for **QA authoring**, **pytest markers**, and **import into Xray/TestRail**.
+Expands each AC with phase, dependency, priority, NFR, test-layer, and traceability fields.
 
 #### Test specification — AC-DG-08-012-01
 
@@ -749,16 +1001,25 @@ Expands each acceptance criterion for **QA authoring**, **pytest markers**, and 
 |-----------|---------------|
 | **Parent US** | `US-DG-08-012` |
 | **Parent EPIC** | `EPIC-DG-08` |
-| **Owning squad** | `compliance-engine` |
+| **Owning squad / role** | `compliance-engine` / `applied_ml_engineer` |
+| **Phase mapping** | primary `L10`; secondary `L11/L12` |
+| **Priority / release** | `P1` / `MVP` |
+| **MoSCoW** | `Should` |
+| **Requirement type** | `Functional` |
+| **NFR metric / target** | `- / -` |
+| **Dependencies** | epics `-`; stories `-`; ACs `-` |
+| **Required test layer** | `unit+integration` (min automated tests: `1`) |
+| **Framework / control tags** | `-` / `-` |
+| **Estimate (story points hint)** | `3` |
 | **Requirement (verbatim)** | On `ContextLengthError`, compactor reduces prior steps per §10.3 and retries bounded times. |
-| **Objective** | Verify the behaviour described in AC-DG-08-012-01: On `ContextLengthError`, compactor reduces prior steps per §10.3 and retries bounded times. |
+| **Objective** | Verify AC-DG-08-012-01: On `ContextLengthError`, compactor reduces prior steps per §10.3 and retries bounded times. |
 | **Preconditions** | Tenant and scan fixtures exist; services healthy per test environment bootstrap. |
-| **Verification procedure** | 1. Arrange test data and configuration to match preconditions. \| 2. Execute the operation or graph path under test (single happy path unless AC implies negative). \| 3. Assert post-conditions against DB rows, API responses, object store metadata, queue state, or traces as applicable. |
-| **Expected result** | All assertions pass; no secret material in logs; stable machine-readable error_code on failures; state remains tenant-scoped for EPIC-DG-08. |
-| **Edge / negative focus** | Concurrent requests: no cross-tenant leakage and no duplicate side effects when idempotency applies. \| Timeout / partial failure: system reaches documented terminal or degraded state without data corruption. |
+| **Verification procedure** | 1. Arrange test data and configuration to match preconditions. \| 2. Execute the operation or graph/API path under test. \| 3. Assert post-conditions against DB rows, API responses, object store metadata, queue state, or traces. |
+| **Expected result** | Assertions pass; no secret material in logs; stable machine-readable error_code on failures; tenant isolation preserved for EPIC-DG-08. |
+| **Edge / negative focus** | Concurrent requests do not duplicate side effects; timeout/partial failures reach documented degraded or terminal states. |
 | **Primary automated test ID** | `TC-DG-08-012-01` |
 | **Secondary / negative test ID** | `TC-DG-08-012-01.2` |
-| **Automation hints** | pytest marker @pytest.mark.req("AC-DG-08-012-01") or Xray/TestRail key == ac_id |
+| **Automation hints** | pytest marker @pytest.mark.req("AC-DG-08-012-01") or Xray/TestRail key == AC-DG-08-012-01 |
 | **Spec references** | Architecture_Design.md (see product spec) |
 
 #### Test specification — AC-DG-08-012-02
@@ -767,16 +1028,25 @@ Expands each acceptance criterion for **QA authoring**, **pytest markers**, and 
 |-----------|---------------|
 | **Parent US** | `US-DG-08-012` |
 | **Parent EPIC** | `EPIC-DG-08` |
-| **Owning squad** | `compliance-engine` |
+| **Owning squad / role** | `compliance-engine` / `applied_ml_engineer` |
+| **Phase mapping** | primary `L10`; secondary `L11/L12` |
+| **Priority / release** | `P1` / `MVP` |
+| **MoSCoW** | `Should` |
+| **Requirement type** | `Functional` |
+| **NFR metric / target** | `- / -` |
+| **Dependencies** | epics `-`; stories `-`; ACs `-` |
+| **Required test layer** | `unit+integration` (min automated tests: `1`) |
+| **Framework / control tags** | `-` / `-` |
+| **Estimate (story points hint)** | `3` |
 | **Requirement (verbatim)** | Compaction events logged with before/after token counts (redacted trace). |
-| **Objective** | Verify the behaviour described in AC-DG-08-012-02: Compaction events logged with before/after token counts (redacted trace). |
+| **Objective** | Verify AC-DG-08-012-02: Compaction events logged with before/after token counts (redacted trace). |
 | **Preconditions** | Tenant and scan fixtures exist; services healthy per test environment bootstrap. |
-| **Verification procedure** | 1. Arrange test data and configuration to match preconditions. \| 2. Execute the operation or graph path under test (single happy path unless AC implies negative). \| 3. Assert post-conditions against DB rows, API responses, object store metadata, queue state, or traces as applicable. |
-| **Expected result** | All assertions pass; no secret material in logs; stable machine-readable error_code on failures; state remains tenant-scoped for EPIC-DG-08. |
-| **Edge / negative focus** | Concurrent requests: no cross-tenant leakage and no duplicate side effects when idempotency applies. \| Timeout / partial failure: system reaches documented terminal or degraded state without data corruption. |
+| **Verification procedure** | 1. Arrange test data and configuration to match preconditions. \| 2. Execute the operation or graph/API path under test. \| 3. Assert post-conditions against DB rows, API responses, object store metadata, queue state, or traces. |
+| **Expected result** | Assertions pass; no secret material in logs; stable machine-readable error_code on failures; tenant isolation preserved for EPIC-DG-08. |
+| **Edge / negative focus** | Concurrent requests do not duplicate side effects; timeout/partial failures reach documented degraded or terminal states. |
 | **Primary automated test ID** | `TC-DG-08-012-02` |
 | **Secondary / negative test ID** | `TC-DG-08-012-02.2` |
-| **Automation hints** | pytest marker @pytest.mark.req("AC-DG-08-012-02") or Xray/TestRail key == ac_id |
+| **Automation hints** | pytest marker @pytest.mark.req("AC-DG-08-012-02") or Xray/TestRail key == AC-DG-08-012-02 |
 | **Spec references** | Architecture_Design.md (see product spec) |
 
 #### Test specification — AC-DG-08-012-03
@@ -785,14 +1055,34 @@ Expands each acceptance criterion for **QA authoring**, **pytest markers**, and 
 |-----------|---------------|
 | **Parent US** | `US-DG-08-012` |
 | **Parent EPIC** | `EPIC-DG-08` |
-| **Owning squad** | `compliance-engine` |
+| **Owning squad / role** | `compliance-engine` / `applied_ml_engineer` |
+| **Phase mapping** | primary `L10`; secondary `L11/L12` |
+| **Priority / release** | `P1` / `MVP` |
+| **MoSCoW** | `Should` |
+| **Requirement type** | `Functional` |
+| **NFR metric / target** | `- / -` |
+| **Dependencies** | epics `-`; stories `-`; ACs `-` |
+| **Required test layer** | `unit+integration` (min automated tests: `1`) |
+| **Framework / control tags** | `-` / `-` |
+| **Estimate (story points hint)** | `3` |
 | **Requirement (verbatim)** | If still failing, control marked `UNCERTAIN` with `error_code=CONTEXT_LIMIT`. |
-| **Objective** | Verify the behaviour described in AC-DG-08-012-03: If still failing, control marked `UNCERTAIN` with `error_code=CONTEXT_LIMIT`. |
+| **Objective** | Verify AC-DG-08-012-03: If still failing, control marked `UNCERTAIN` with `error_code=CONTEXT_LIMIT`. |
 | **Preconditions** | Tenant and scan fixtures exist; services healthy per test environment bootstrap. |
-| **Verification procedure** | 1. Arrange test data and configuration to match preconditions. \| 2. Execute the operation or graph path under test (single happy path unless AC implies negative). \| 3. Assert post-conditions against DB rows, API responses, object store metadata, queue state, or traces as applicable. |
-| **Expected result** | All assertions pass; no secret material in logs; stable machine-readable error_code on failures; state remains tenant-scoped for EPIC-DG-08. |
-| **Edge / negative focus** | Concurrent requests: no cross-tenant leakage and no duplicate side effects when idempotency applies. \| Timeout / partial failure: system reaches documented terminal or degraded state without data corruption. |
+| **Verification procedure** | 1. Arrange test data and configuration to match preconditions. \| 2. Execute the operation or graph/API path under test. \| 3. Assert post-conditions against DB rows, API responses, object store metadata, queue state, or traces. |
+| **Expected result** | Assertions pass; no secret material in logs; stable machine-readable error_code on failures; tenant isolation preserved for EPIC-DG-08. |
+| **Edge / negative focus** | Concurrent requests do not duplicate side effects; timeout/partial failures reach documented degraded or terminal states. |
 | **Primary automated test ID** | `TC-DG-08-012-03` |
 | **Secondary / negative test ID** | `TC-DG-08-012-03.2` |
-| **Automation hints** | pytest marker @pytest.mark.req("AC-DG-08-012-03") or Xray/TestRail key == ac_id |
+| **Automation hints** | pytest marker @pytest.mark.req("AC-DG-08-012-03") or Xray/TestRail key == AC-DG-08-012-03 |
 | **Spec references** | Architecture_Design.md (see product spec) |
+
+
+## Epic Definition of Done checklist
+
+- [ ] All in-scope ACs for `EPIC-DG-08` implemented by `compliance-engine` and linked to automated tests (`TC-DG-*`).
+- [ ] Unit coverage on touched packages is >=80%.
+- [ ] Integration tests pass for all required ACs.
+- [ ] Playwright BDD updated where `test_layer_required` includes `bdd`.
+- [ ] Observability hooks and stable `error_code` behaviour validated.
+- [ ] Security/data-sovereignty constraints verified (no secret leaks, tenant isolation).
+- [ ] Design spec for slice exists under `docs/design/` with approved status.

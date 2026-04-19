@@ -1,6 +1,6 @@
 # EPIC-DG-07 — IaC & live cloud analysers (Laocoon + Cassandra)
 
-> **AC-level test specifications (generated):** Squad copy [`squads/connectors/EPIC-DG-07-detailed.md`](squads/connectors/EPIC-DG-07-detailed.md); per-AC rows [`traceability-ac-detail-matrix.csv`](traceability-ac-detail-matrix.csv). Regenerate: `python3 scripts/generate_ac_details_and_squad_docs.py`.
+> **AC-level test specifications (generated):** Squad copy [`squads/connectors/EPIC-DG-07-detailed.md`](squads/connectors/EPIC-DG-07-detailed.md); per-AC rows [`traceability-ac-detail-matrix.csv`](traceability-ac-detail-matrix.csv), JSON [`traceability-ac-detail.json`](traceability-ac-detail.json). Regenerate: `python3 scripts/generate_ac_details_and_squad_docs.py` then `python3 scripts/validate_user_stories_traceability.py`.
 
 
 **Goal:** Produce normalised IaC findings and cloud posture findings using read-only connectors and typed tool calls per `Architecture_Design.md` §15–§16, product multi-cloud claims.

@@ -17,6 +17,12 @@ jobs:
           cache: pip
       - name: Install
         run: pip install -e ".[dev]"
+      - name: Traceability docs regeneration + validation
+        run: |
+          python3 scripts/generate_ac_details_and_squad_docs.py
+          python3 scripts/generate_bdd_stubs_from_traceability.py
+          python3 scripts/validate_user_stories_traceability.py
+          git diff --exit-code docs/user-stories/traceability-ac-detail-matrix.csv docs/user-stories/traceability-ac-detail.json docs/user-stories/phase-exports docs/user-stories/squads docs/user-stories/bdd-stubs
       - name: Lint, types, tests (ci-quality)
         run: make ci-quality
 

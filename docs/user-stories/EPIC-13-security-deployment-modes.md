@@ -1,6 +1,6 @@
 # EPIC-DG-13 — Security, secrets & deployment topologies
 
-> **AC-level test specifications (generated):** Squad copy [`squads/security-deployment/EPIC-DG-13-detailed.md`](squads/security-deployment/EPIC-DG-13-detailed.md); per-AC rows [`traceability-ac-detail-matrix.csv`](traceability-ac-detail-matrix.csv). Regenerate: `python3 scripts/generate_ac_details_and_squad_docs.py`.
+> **AC-level test specifications (generated):** Squad copy [`squads/security-deployment/EPIC-DG-13-detailed.md`](squads/security-deployment/EPIC-DG-13-detailed.md); per-AC rows [`traceability-ac-detail-matrix.csv`](traceability-ac-detail-matrix.csv), JSON [`traceability-ac-detail.json`](traceability-ac-detail.json). Regenerate: `python3 scripts/generate_ac_details_and_squad_docs.py` then `python3 scripts/validate_user_stories_traceability.py`.
 
 
 **Goal:** Satisfy data-sovereignty, air-gap, caching safety, and LLM routing policies per `Architecture_Design.md` §2.3, §13, §20–§22, §27 and Chinese market requirements (`玄武合规引擎_商业计划书.md`).

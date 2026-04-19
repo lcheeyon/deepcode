@@ -17,6 +17,7 @@ from deepguard_core.models import (
     Finding,
     FindingAssessmentStatus,
     FindingSeverity,
+    LangGraphJobOptions,
     NotificationSettings,
     PolicyControl,
     RepoSpec,
@@ -215,6 +216,21 @@ def test_json_roundtrip_create_scan() -> None:
     assert m.repo is not None
     assert str(m.repo.url).startswith("https://gitlab.com/")
     assert m.repo.source == "git"
+
+
+def test_langgraph_job_options_roundtrip() -> None:
+    req = CreateScanRequest(
+        repo=_repo(),
+        policy_ids=_policies(),
+        scan_layers=_layers(code=True, iac=False, cloud=False),
+        langgraph=LangGraphJobOptions(
+            interrupt_before_athena=True,
+            code_analysis_shard_keys=["  a ", "b"],
+        ),
+    )
+    dumped = req.model_dump(mode="json")
+    assert dumped["langgraph"]["interrupt_before_athena"] is True
+    assert dumped["langgraph"]["code_analysis_shard_keys"] == ["a", "b"]
 
 
 def test_archive_repo_scan_requires_storage_uri() -> None:

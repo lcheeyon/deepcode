@@ -56,18 +56,26 @@ def graph_node_span(
     scan_id: str,
     tenant_id: str,
     tracer: trace.Tracer | None = None,
+    observation_semantic: str = "GRAPH_NODE",
 ) -> Iterator[None]:
-    """Emit one span per graph node with required correlation attributes (L13)."""
+    """Emit one span per graph node with correlation + LangFuse-oriented hints (L13 / §8.2)."""
+
+    from deepguard_observability.correlation import graph_correlation_context
 
     tr = tracer or trace.get_tracer("deepguard.graph")
     name = f"graph.node.{node_id}"
+    corr = graph_correlation_context.get()
+    attributes: dict[str, str] = {
+        "deepguard.graph.node": node_id,
+        "scan_id": scan_id,
+        "tenant_id": tenant_id,
+        "deepguard.observation.kind": observation_semantic,
+    }
+    if corr:
+        attributes["deepguard.correlation_id"] = corr
     with tr.start_as_current_span(
         name,
-        attributes={
-            "deepguard.graph.node": node_id,
-            "scan_id": scan_id,
-            "tenant_id": tenant_id,
-        },
+        attributes=attributes,
     ):
         yield
 

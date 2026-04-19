@@ -460,7 +460,7 @@ OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4317 pytest tests/e2e -q
 **Exit criteria**
 
 - [x] Graph node span helper attaches ``scan_id`` and ``tenant_id`` (``packages/observability/tests``)  
-- [x] LangSmith disabled by default in dev; opt-in note in ``docs/dev-setup.md`` (no LangSmith SDK in workspace deps)  
+- [x] EPIC-DG-11: LangSmith + LangFuse + OTEL wired (see ``docs/dev-setup.md``, ``documentation/langstack-usage-and-roadmap.md``); LangSmith tracing defaults **on** outside CI when ``LANGCHAIN_TRACING_V2`` is unset; CI/pytest force off  
 
 ---
 

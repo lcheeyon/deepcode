@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import Literal, Self
 
-from pydantic import AnyHttpUrl, BaseModel, ConfigDict, Field, model_validator
+from pydantic import AnyHttpUrl, BaseModel, ConfigDict, Field, field_validator, model_validator
 
 from deepguard_core.models.enums import CloudProvider, WebhookEvent
 
@@ -111,6 +111,20 @@ class BudgetConfig(BaseModel):
     max_wall_seconds: int | None = Field(default=None, gt=0)
 
 
+class LangGraphJobOptions(BaseModel):
+    """Optional LangGraph / worker runtime flags (Architecture §7.1, EPIC-DG-01)."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    interrupt_before_athena: bool = False
+    code_analysis_shard_keys: list[str] = Field(default_factory=list, max_length=2)
+
+    @field_validator("code_analysis_shard_keys", mode="after")
+    @classmethod
+    def normalize_shard_keys(cls, v: list[str]) -> list[str]:
+        return [s.strip() for s in v if s.strip()]
+
+
 class CreateScanRequest(BaseModel):
     """`POST /v1/scans` JSON body — normative shape (Architecture §28.4).
 
@@ -128,6 +142,7 @@ class CreateScanRequest(BaseModel):
     cloud_profiles: list[CloudProfile] = Field(default_factory=list)
     notifications: NotificationSettings | None = None
     budget: BudgetConfig | None = None
+    langgraph: LangGraphJobOptions | None = None
 
     @model_validator(mode="after")
     def validate_layer_inputs(self) -> Self:

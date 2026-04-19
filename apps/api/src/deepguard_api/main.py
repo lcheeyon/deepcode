@@ -7,21 +7,28 @@ from contextlib import asynccontextmanager
 from typing import cast
 
 import redis.asyncio as redis_async
+from deepguard_observability.runtime import (
+    configure_observability_at_startup,
+    instrument_fastapi_app,
+)
 from fastapi import APIRouter, Depends, FastAPI, Request
-from starlette.middleware.cors import CORSMiddleware
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
+from starlette.middleware.cors import CORSMiddleware
 
 from deepguard_api.auth_deps import require_api_key
 from deepguard_api.config import Settings, load_settings
 from deepguard_api.deps import get_scan_repository
 from deepguard_api.logging_json import configure_logging
+from deepguard_api.repositories.console import MemoryConsoleStore
 from deepguard_api.repositories.scans import MemoryScanRepository, ScanRepository
-from deepguard_api.routers import health, repo_uploads, scans
+from deepguard_api.routers import health, policies, repo_uploads, scan_console, scan_workflow, scans
 
 
 @asynccontextmanager
 async def _lifespan(app: FastAPI) -> AsyncIterator[None]:
     configure_logging()
+    configure_observability_at_startup(service_name="deepguard-api")
+    instrument_fastapi_app(app)
     settings: Settings = app.state.settings
     if not settings.use_memory_store:
         if not settings.database_url:
@@ -62,6 +69,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.state.settings = resolved
     if resolved.use_memory_store:
         app.state.memory_repo = MemoryScanRepository()
+        app.state.memory_console = MemoryConsoleStore(app.state.memory_repo)
 
         async def _memory_repo(request: Request) -> ScanRepository:
             return cast(ScanRepository, request.app.state.memory_repo)
@@ -71,6 +79,9 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     v1 = APIRouter(prefix="/v1")
     v1.include_router(health.router)
     v1.include_router(scans.router, dependencies=[Depends(require_api_key)])
+    v1.include_router(scan_workflow.router, dependencies=[Depends(require_api_key)])
+    v1.include_router(scan_console.router, dependencies=[Depends(require_api_key)])
+    v1.include_router(policies.router, dependencies=[Depends(require_api_key)])
     v1.include_router(repo_uploads.router, dependencies=[Depends(require_api_key)])
     app.include_router(v1)
     if resolved.cors_origins:

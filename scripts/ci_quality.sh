@@ -5,6 +5,10 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT"
 
+# EPIC-DG-11: keep CI hermetic (no LangSmith/LangFuse network); OTEL console noise down.
+export LANGCHAIN_TRACING_V2="${LANGCHAIN_TRACING_V2:-false}"
+export DEEPGUARD_OTEL_BOOTSTRAP="${DEEPGUARD_OTEL_BOOTSTRAP:-0}"
+
 python3 -m ruff check .
 python3 -m ruff format --check .
 python3 -m mypy -p deepguard_core -p deepguard_graph -p deepguard_policies -p deepguard_parsers \

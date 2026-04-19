@@ -14,7 +14,10 @@ description: >-
 **Canonical prose + templates:** `docs/user-stories/00-numbering-and-traceability.md`  
 **EPIC backlog + AC catalogue:** `docs/user-stories/README.md` and `docs/user-stories/EPIC-*.md`  
 **Per-AC detail (CSV):** `docs/user-stories/traceability-ac-detail-matrix.csv` — regenerate with `python3 scripts/generate_ac_details_and_squad_docs.py`  
-**Consistency:** `python3 scripts/validate_user_stories_traceability.py` — fails if EPIC markdown ACs ≠ CSV rows  
+**Per-AC detail (JSON):** `docs/user-stories/traceability-ac-detail.json` — generated alongside CSV  
+**Phase exports:** `docs/user-stories/phase-exports/traceability-<phase>.csv|json` (e.g. `traceability-L10.csv`)  
+**BDD stubs:** `docs/user-stories/bdd-stubs/*.feature` — generate with `python3 scripts/generate_bdd_stubs_from_traceability.py`  
+**Consistency:** `python3 scripts/validate_user_stories_traceability.py` — fails on AC mismatch, missing metadata columns, or empty required fields  
 **Per-squad expanded specs:** `docs/user-stories/squads/<squad>/EPIC-DG-NN-detailed.md` (same stories + test-spec table per AC)  
 **Sample import sheet:** `docs/user-stories/traceability-matrix-sample.csv`
 
@@ -34,7 +37,7 @@ EPIC-DG-{ee}                 ee = 01–99   (capability / bounded context)
               └── TC-DG-{ee}-{sss}-{aa}[.{n}]   optional test case(s) for that AC
 ```
 
-- **Epic** `EPIC-DG-01` … `EPIC-DG-13` — see index in `docs/user-stories/README.md`.
+- **Epic** `EPIC-DG-01` … `EPIC-DG-14` — see index in `docs/user-stories/README.md`.
 - **Story** `US-DG-02-014` = Epic **02**, story **014**.
 - **AC** `AC-DG-02-014-03` = third AC of that story.
 - **Test case** `TC-DG-02-014-03` — same numeric body as `AC-DG-02-014-03` with **`AC-` → `TC-`**; variants `TC-DG-02-014-03.2` for negative/additional cases. The generator emits `suggested_tc_primary` / `suggested_tc_negative` columns in the CSV.
@@ -55,6 +58,14 @@ EPIC-DG-{ee}                 ee = 01–99   (capability / bounded context)
 - **Unit layer:** mark `@pytest.mark.unit` where helpful; enforce **≥80% line coverage** on touched packages per PR (see delivery-quality skill).
 - **Integration layer:** `@pytest.mark.integration`; Docker-backed; maps ACs to multi-service flows.
 - **BDD layer:** Playwright (or repo-standard runner); map **scenarios → `US-DG-*` / `AC-DG-*`** in file headers; run in CI before manual UAT.
+
+## Regeneration workflow
+
+After editing canonical `EPIC-*.md`:
+
+1. `python3 scripts/generate_ac_details_and_squad_docs.py`
+2. `python3 scripts/generate_bdd_stubs_from_traceability.py`
+3. `python3 scripts/validate_user_stories_traceability.py`
 
 ## Cross-tool usage (Cursor + Claude Code)
 

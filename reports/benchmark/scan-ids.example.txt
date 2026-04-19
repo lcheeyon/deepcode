@@ -1,0 +1,5 @@
+# DeepGuard benchmark scan IDs (one UUID per line)
+# generated after submitting benchmark campaign
+
+00000000-0000-4000-8000-000000000001
+00000000-0000-4000-8000-000000000002

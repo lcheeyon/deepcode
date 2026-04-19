@@ -1,6 +1,6 @@
 # EPIC-DG-04 — Ingestion gateway (Hermes)
 
-> **AC-level test specifications (generated):** Squad copy [`squads/ingestion-codeintel/EPIC-DG-04-detailed.md`](squads/ingestion-codeintel/EPIC-DG-04-detailed.md); per-AC rows [`traceability-ac-detail-matrix.csv`](traceability-ac-detail-matrix.csv). Regenerate: `python3 scripts/generate_ac_details_and_squad_docs.py`.
+> **AC-level test specifications (generated):** Squad copy [`squads/ingestion-codeintel/EPIC-DG-04-detailed.md`](squads/ingestion-codeintel/EPIC-DG-04-detailed.md); per-AC rows [`traceability-ac-detail-matrix.csv`](traceability-ac-detail-matrix.csv), JSON [`traceability-ac-detail.json`](traceability-ac-detail.json). Regenerate: `python3 scripts/generate_ac_details_and_squad_docs.py` then `python3 scripts/validate_user_stories_traceability.py`.
 
 
 **Goal:** Acquire source artefacts, optional IaC bundles, and read-only cloud snapshots into the secure work area and object store per `Architecture_Design.md` §11.1, §32 and product docs (Git/ZIP/CI).

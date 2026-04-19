@@ -1,6 +1,6 @@
 # BDD scenarios — DeepGuard console MVP (EPIC-DG-14)
 
-Human-readable mirror of `e2e/console.spec.ts`. Automation uses **Playwright**; exploratory checks may use **agent-browser** (`scripts/agent-browser-smoke.sh`).
+Human-readable mirror of `e2e/console.spec.ts`, **`e2e/bdd-console-power-rag-mock.spec.ts`** (mocked API), and **`e2e/bdd-console-power-rag.spec.ts`** (optional **real** local API + worker for **[lcheeyon/power-rag](https://github.com/lcheeyon/power-rag)** when **`E2E_POWER_RAG_BACKEND=1`**). Automation uses **Playwright**; exploratory checks may use **agent-browser** (`scripts/agent-browser-smoke.sh`).
 
 **HTML report:** each automated step calls `stepScreenshot()` so the Playwright HTML report includes a **full-page screenshot** per BDD step (`npx playwright show-report playwright-report`).
 

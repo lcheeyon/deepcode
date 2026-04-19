@@ -1,12 +1,14 @@
-"""Phase L5 — Odysseus stub graph order, skips, checkpoint resume (Architecture §4)."""
+"""Phase L5 — Odysseus stub graph order, skips, checkpoint resume (Architecture §4 + §7.1)."""
 
 from __future__ import annotations
 
 import uuid
-from typing import cast
+from typing import Any, cast
 
+from deepguard_graph.compilation import compile_odysseus_app, resume_odysseus_after_interrupt
 from deepguard_graph.graph import build_odysseus_graph
 from deepguard_graph.state import empty_odysseus_state
+from deepguard_graph.stub_nodes import stub_argus as stub_argus_impl
 from langchain_core.runnables import RunnableConfig
 from langgraph.checkpoint.memory import MemorySaver
 
@@ -16,16 +18,21 @@ def _job(
     iac: bool,
     cloud: bool,
     cloud_snapshots: dict | None = None,
+    langgraph: dict | None = None,
 ) -> dict:
-    return {
+    d: dict = {
         "repo": {"url": "https://github.com/acme/svc", "ref": "main"},
         "policy_ids": ["ISO-27001-2022"],
         "scan_layers": {"code": True, "iac": iac, "cloud": cloud},
-        **({"cloud_snapshots": cloud_snapshots} if cloud_snapshots is not None else {}),
     }
+    if cloud_snapshots is not None:
+        d["cloud_snapshots"] = cloud_snapshots
+    if langgraph is not None:
+        d["langgraph"] = langgraph
+    return d
 
 
-def _compile(**compile_kwargs):
+def _compile(**compile_kwargs: Any):
     return build_odysseus_graph().compile(**compile_kwargs)
 
 
@@ -100,10 +107,10 @@ def test_cloud_layer_without_snapshots_skips_cassandra() -> None:
 
 
 def test_odysseus_memory_checkpoint_resume_no_duplicate_stub_findings() -> None:
-    """Interrupt after Argus, resume with same ``thread_id`` — stubs do not double-append."""
+    """Interrupt after ingestion; resume on same ``thread_id`` without duplicate stub findings."""
 
     mem = MemorySaver()
-    app = _compile(checkpointer=mem, interrupt_after=["argus"])
+    app = _compile(checkpointer=mem, interrupt_after=["ingestion"])
     cfg = _thread_config()
     init = empty_odysseus_state(
         scan_id=str(uuid.uuid4()),
@@ -119,3 +126,65 @@ def test_odysseus_memory_checkpoint_resume_no_duplicate_stub_findings() -> None:
     assert len(findings) == len(set(findings))
     assert findings.count("finding:hermes") == 1
     assert cont["execution_log"][-1] == "penelope"
+
+
+def test_code_analysis_shard_keys_add_parallel_code_mappers() -> None:
+    """§7.1 map-reduce: optional ``Send`` targets ``parallel_code_*`` with shard labels."""
+
+    app = _compile(checkpointer=MemorySaver())
+    init = empty_odysseus_state(
+        scan_id=str(uuid.uuid4()),
+        created_at="2026-04-18T12:00:00+00:00",
+        job_config=_job(
+            iac=False,
+            cloud=False,
+            langgraph={"code_analysis_shard_keys": ["svc/a", "svc/b"]},
+        ),
+    )
+    out = app.invoke(init, config=_thread_config())
+    log = out["execution_log"]
+    assert "code_shard:0:svc/a" in log
+    assert "code_shard:1:svc/b" in log
+
+
+def test_argus_retry_recovers_from_transient_error() -> None:
+    """§7.1 retry policy on Argus — transient ``ConnectionError`` then success."""
+
+    calls = {"n": 0}
+
+    def flaky_argus(state: Any) -> dict[str, Any]:
+        calls["n"] += 1
+        if calls["n"] < 2:
+            raise ConnectionError("transient")
+        return stub_argus_impl(state)
+
+    app = compile_odysseus_app(checkpointer=MemorySaver(), argus_node=flaky_argus)
+    init = empty_odysseus_state(
+        scan_id=str(uuid.uuid4()),
+        created_at="2026-04-18T12:00:00+00:00",
+        job_config=_job(iac=False, cloud=False),
+    )
+    out = app.invoke(init, config=_thread_config())
+    assert calls["n"] == 2
+    assert "argus" in out["execution_log"]
+
+
+def test_hitl_interrupt_before_athena_then_resume() -> None:
+    """§7.1 HITL — pause before Athena, then resume to Penelope on same checkpoint thread."""
+
+    mem = MemorySaver()
+    tid = str(uuid.uuid4())
+    cfg = cast(RunnableConfig, {"configurable": {"thread_id": tid}})
+    app = compile_odysseus_app(checkpointer=mem, interrupt_before_athena=True)
+    init = empty_odysseus_state(
+        scan_id=tid,
+        created_at="2026-04-18T12:00:00+00:00",
+        job_config=_job(iac=False, cloud=False),
+    )
+    mid = app.invoke(init, config=cfg)
+    assert "athena" not in mid["execution_log"]
+    assert mid["execution_log"][-1] == "convergence_gate"
+
+    end = resume_odysseus_after_interrupt(checkpointer=mem, scan_id=tid, tenant_id="")
+    assert end["execution_log"][-1] == "penelope"
+    assert end["execution_log"].count("convergence_gate") == 1

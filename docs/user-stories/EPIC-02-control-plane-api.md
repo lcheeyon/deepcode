@@ -1,6 +1,6 @@
 # EPIC-DG-02 — Control plane HTTP API (FastAPI)
 
-> **AC-level test specifications (generated):** Squad copy [`squads/control-plane/EPIC-DG-02-detailed.md`](squads/control-plane/EPIC-DG-02-detailed.md); per-AC rows [`traceability-ac-detail-matrix.csv`](traceability-ac-detail-matrix.csv). Regenerate: `python3 scripts/generate_ac_details_and_squad_docs.py`.
+> **AC-level test specifications (generated):** Squad copy [`squads/control-plane/EPIC-DG-02-detailed.md`](squads/control-plane/EPIC-DG-02-detailed.md); per-AC rows [`traceability-ac-detail-matrix.csv`](traceability-ac-detail-matrix.csv), JSON [`traceability-ac-detail.json`](traceability-ac-detail.json). Regenerate: `python3 scripts/generate_ac_details_and_squad_docs.py` then `python3 scripts/validate_user_stories_traceability.py`.
 
 
 **Goal:** Expose a versioned, tenant-safe HTTP API for creating and observing scans, retrieving findings and artefacts, and managing policies per `Architecture_Design.md` §28.

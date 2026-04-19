@@ -12,6 +12,12 @@ SCAN_STREAM_KEY = "stream:scans"
 SCAN_CONSUMER_GROUP = "workers"
 
 
+def scan_timeline_pubsub_channel(*, scan_id: UUID) -> str:
+    """Redis channel for SSE fan-out after each ``scan_run_events`` insert."""
+
+    return f"deepguard:scan:{scan_id}:timeline"
+
+
 class ScanJobMessage(BaseModel):
     """Payload carried on ``stream:scans`` entries."""
 

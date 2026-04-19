@@ -24,6 +24,7 @@ site/
 reports/html/
 reports/junit-*.xml
 reports/pytest-*.txt
+reports/playwright-bdd-report.pdf
 
 # IDE / OS
 .idea/

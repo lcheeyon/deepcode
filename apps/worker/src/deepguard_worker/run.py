@@ -7,6 +7,7 @@ import logging
 import redis.asyncio as redis_async
 from deepguard_api.repositories.scans import PostgresScanRepository
 from deepguard_core.queue import SCAN_CONSUMER_GROUP, SCAN_STREAM_KEY, ScanJobMessage
+from deepguard_observability.runtime import configure_observability_at_startup
 from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
@@ -21,6 +22,7 @@ async def run_worker(*, settings: WorkerSettings | None = None) -> None:
     """Blocking loop: read ``stream:scans``, claim ``QUEUED`` rows, stub ingest."""
 
     cfg = settings or load_worker_settings()
+    configure_observability_at_startup(service_name="deepguard-worker")
     engine = create_async_engine(cfg.database_url, pool_pre_ping=True)
     session_maker = async_sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
     redis = redis_async.from_url(cfg.redis_url, decode_responses=True)

@@ -1,6 +1,6 @@
 # EPIC-DG-01 — Scan job orchestration (Odysseus / LangGraph)
 
-> **AC-level test specifications (generated):** Squad copy [`squads/platform-runtime/EPIC-DG-01-detailed.md`](squads/platform-runtime/EPIC-DG-01-detailed.md); per-AC rows [`traceability-ac-detail-matrix.csv`](traceability-ac-detail-matrix.csv). Regenerate: `python3 scripts/generate_ac_details_and_squad_docs.py`.
+> **AC-level test specifications (generated):** Squad copy [`squads/platform-runtime/EPIC-DG-01-detailed.md`](squads/platform-runtime/EPIC-DG-01-detailed.md); per-AC rows [`traceability-ac-detail-matrix.csv`](traceability-ac-detail-matrix.csv), JSON [`traceability-ac-detail.json`](traceability-ac-detail.json). Regenerate: `python3 scripts/generate_ac_details_and_squad_docs.py` then `python3 scripts/validate_user_stories_traceability.py`.
 
 
 **Goal:** Reliably execute end-to-end compliance scans across ingestion → analysis → mapping → remediation → reporting, with resumability, cancellation, and clear lifecycle semantics aligned to `Architecture_Design.md` §4, §14, §28–§31.

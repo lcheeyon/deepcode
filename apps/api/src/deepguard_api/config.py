@@ -34,6 +34,11 @@ class Settings:
     cors_origins: tuple[str, ...] = ()
     """Allowed browser origins for CORS (e.g. local Next console). Empty = disabled."""
 
+    langsmith_ui_origin: str | None = None
+    langsmith_organization_id: str | None = None
+    langsmith_project_id: str | None = None
+    langfuse_public_host: str | None = None
+
     def s3_repo_upload_configured(self) -> bool:
         return bool(self.s3_bucket and self.s3_access_key_id and self.s3_secret_access_key)
 
@@ -69,6 +74,14 @@ def load_settings() -> Settings:
     cors_origins = tuple(
         o.strip() for o in cors_raw.split(",") if o.strip()
     ) if cors_raw else ()
+    ls_origin = os.environ.get("LANGSMITH_UI_ORIGIN", "").strip() or None
+    ls_org = os.environ.get("LANGSMITH_ORGANIZATION_ID", "").strip() or None
+    ls_proj = (
+        os.environ.get("LANGSMITH_PROJECT_ID", "").strip()
+        or os.environ.get("LANGCHAIN_PROJECT", "").strip()
+        or None
+    )
+    lf_host = os.environ.get("LANGFUSE_HOST", "").strip() or None
     return Settings(
         database_url=db,
         dev_tenant_id=UUID(raw_tenant),
@@ -81,4 +94,8 @@ def load_settings() -> Settings:
         s3_access_key_id=ak,
         s3_secret_access_key=sk,
         cors_origins=cors_origins,
+        langsmith_ui_origin=ls_origin,
+        langsmith_organization_id=ls_org,
+        langsmith_project_id=ls_proj,
+        langfuse_public_host=lf_host,
     )

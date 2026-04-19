@@ -2,8 +2,11 @@
 
 from __future__ import annotations
 
+import asyncio
+import io
 import uuid
 from collections.abc import Iterator
+from pathlib import Path
 
 import pytest
 from deepguard_api.config import Settings
@@ -127,6 +130,77 @@ def test_prepare_repo_upload_returns_503_without_s3(client: TestClient) -> None:
     )
     assert r.status_code == 503
     assert r.json()["detail"]["error_code"] == "REPO_UPLOAD_S3_UNCONFIGURED"
+
+
+def test_list_findings_memory_stub(client: TestClient) -> None:
+    h = {"X-API-Key": "test-secret"}
+    body = {
+        "repo": {"url": "https://github.com/acme/svc", "ref": "main"},
+        "policy_ids": ["ISO-27001-2022"],
+        "scan_layers": {"code": True, "iac": False, "cloud": False},
+    }
+    c = client.post("/v1/scans", json=body, headers=h)
+    sid = c.json()["scan_id"]
+    r = client.get(f"/v1/scans/{sid}/findings?limit=10", headers=h)
+    assert r.status_code == 200
+    data = r.json()
+    assert len(data["items"]) >= 2
+    assert data["items"][0]["severity"] in {"HIGH", "MEDIUM", "LOW", "CRITICAL", "INFO"}
+
+
+def test_findings_export_csv(client: TestClient) -> None:
+    h = {"X-API-Key": "test-secret"}
+    body = {
+        "repo": {"url": "https://github.com/acme/svc", "ref": "main"},
+        "policy_ids": ["ISO-27001-2022"],
+        "scan_layers": {"code": True, "iac": False, "cloud": False},
+    }
+    sid = client.post("/v1/scans", json=body, headers=h).json()["scan_id"]
+    r = client.get(f"/v1/scans/{sid}/findings/export?format=csv", headers=h)
+    assert r.status_code == 200
+    assert "deepguard-findings-export v1" in r.text
+    assert "finding_id" in r.text
+
+
+def test_artifact_download_memory_inline(client: TestClient, memory_settings: Settings) -> None:
+    h = {"X-API-Key": "test-secret"}
+    body = {
+        "repo": {"url": "https://github.com/acme/svc", "ref": "main"},
+        "policy_ids": ["ISO-27001-2022"],
+        "scan_layers": {"code": True, "iac": False, "cloud": False},
+    }
+    sid = uuid.UUID(client.post("/v1/scans", json=body, headers=h).json()["scan_id"])
+    tid = memory_settings.dev_tenant_id
+    app = client.app
+    repo = app.state.memory_repo
+    aid = asyncio.run(
+        repo.mark_scan_complete_with_report(
+            tenant_id=tid,
+            scan_id=sid,
+            pdf_bytes=b"%PDF-1.4 minimal test",
+            storage_uri="s3://test-bucket/reports/x.pdf",
+        )
+    )
+    g = client.get(f"/v1/scans/{sid}", headers=h)
+    assert g.json().get("report_artifact_id") == str(aid)
+    arts = client.get(f"/v1/scans/{sid}/artifacts", headers=h).json()["artifacts"]
+    assert len(arts) == 1
+    dl = client.get(f"/v1/scans/{sid}/artifacts/{aid}", headers=h)
+    assert dl.status_code == 200
+    assert dl.content.startswith(b"%PDF")
+
+
+def test_policy_upload_yaml(client: TestClient) -> None:
+    h = {"X-API-Key": "test-secret"}
+    fixture = Path("packages/policies/tests/fixtures/iso_synthetic.yaml").read_bytes()
+    files = {"file": ("policy.yaml", io.BytesIO(fixture), "application/x-yaml")}
+    r = client.post("/v1/policies:upload", headers=h, files=files)
+    assert r.status_code == 201, r.text
+    data = r.json()
+    assert data["controls_extracted"] >= 1
+    assert "2022-demo" in data["policy_version"] or data["policy_version"]
+    listed = client.get("/v1/policies", headers=h).json()["uploads"]
+    assert len(listed) >= 1
 
 
 def test_cors_preflight_when_origins_configured() -> None:

@@ -1,16 +1,16 @@
-epic_id,us_id,ac_id,ac_summary,suggested_test_level,priority,status
-EPIC-DG-01,US-DG-01-006,AC-DG-01-006-02,Stale pending entries reclaimable after visibility timeout,integration,High,Planned
-EPIC-DG-01,US-DG-01-008,AC-DG-01-008-01,max_wall_seconds triggers cooperative abort with stable error_code,integration,High,Planned
-EPIC-DG-02,US-DG-02-008,AC-DG-02-008-01,Resume returns 202 when graph interrupted and auth valid,API,High,Planned
-EPIC-DG-02,US-DG-02-009,AC-DG-02-009-01,GET /v1/scans lists only current tenant scans,API contract,High,Planned
-EPIC-DG-03,US-DG-03-006,AC-DG-03-006-01,Audit events capture actor action target outcome,integration,Medium,Planned
-EPIC-DG-04,US-DG-04-007,AC-DG-04-007-01,sub_path staging blocks path traversal escape,sandbox unit,High,Planned
-EPIC-DG-05,US-DG-05-007,AC-DG-05-007-01,policy_chunks embedded with policy_version after parse,integration,High,Planned
-EPIC-DG-06,US-DG-06-008,AC-DG-06-008-02,Delta fingerprint includes commit policy_version scan_layers,unit,Medium,Planned
-EPIC-DG-07,US-DG-07-010,AC-DG-07-010-01,Alibaba connector emits ActionTrail OSS ACK signals per mapping,contract+VCR,High,Planned
-EPIC-DG-08,US-DG-08-009,AC-DG-08-009-01,Failed Athena batch does not discard prior batch findings,graph integration,High,Planned
-EPIC-DG-09,US-DG-09-006,AC-DG-09-006-01,Patch validator rejects new import lines without override,unit,Medium,Planned
-EPIC-DG-10,US-DG-10-007,AC-DG-10-007-01,Markdown report artefact stored with checksum,integration,Medium,Planned
-EPIC-DG-11,US-DG-11-009,AC-DG-11-009-01,LANGCHAIN_TRACING_V2 false implies no LangSmith network calls,network integration,High,Planned
-EPIC-DG-12,US-DG-12-009,AC-DG-12-009-01,Cross-layer findings page lists layers and evidence links,E2E UI,Medium,Planned
-EPIC-DG-13,US-DG-13-010,AC-DG-13-010-01,Egress allowlist documented per deployment mode,docs+policy,High,Planned
+epic_id,us_id,ac_id,phase_primary,phase_secondary,squad,priority,moscow,release,requirement_type,nfr_metric,depends_on_epics,depends_on_us,test_layer_required,suggested_tc_primary,status,ac_summary
+EPIC-DG-01,US-DG-01-006,AC-DG-01-006-02,L4,L5/L12,platform-runtime,P1,Should,MVP,Functional,,EPIC-DG-02,,integration,TC-DG-01-006-02,Planned,Stale pending entries reclaimable after visibility timeout
+EPIC-DG-01,US-DG-01-008,AC-DG-01-008-01,L4,L5/L12,platform-runtime,P1,Should,Hardening,NFR,service_level_objective,,,integration,TC-DG-01-008-01,Planned,max_wall_seconds triggers cooperative abort with stable error_code
+EPIC-DG-02,US-DG-02-008,AC-DG-02-008-01,L3,L12/C5,control-plane,P1,Should,MVP,Functional,,EPIC-DG-03,,unit+integration,TC-DG-02-008-01,Planned,Resume returns 202 when graph interrupted and auth valid
+EPIC-DG-02,US-DG-02-009,AC-DG-02-009-01,L3,L12/C5,control-plane,P1,Should,MVP,Functional,,,US-DG-03-002,unit+integration,TC-DG-02-009-01,Planned,GET /v1/scans lists only current tenant scans
+EPIC-DG-03,US-DG-03-006,AC-DG-03-006-01,L3,L14/C5,identity-tenancy,P0,Must,MVP,Functional,,,US-DG-02-008,unit+integration,TC-DG-03-006-01,Planned,Audit events capture actor action target outcome
+EPIC-DG-04,US-DG-04-007,AC-DG-04-007-01,L6,L8/L9,ingestion-codeintel,P1,Should,MVP,Functional,,,,unit+integration,TC-DG-04-007-01,Planned,sub_path staging blocks path traversal escape
+EPIC-DG-05,US-DG-05-007,AC-DG-05-007-01,L7,L10/L11,policy,P1,Should,MVP,Functional,,EPIC-DG-06,,unit+integration,TC-DG-05-007-01,Planned,policy_chunks embedded with policy_version after parse
+EPIC-DG-06,US-DG-06-008,AC-DG-06-008-02,L8,L10,ingestion-codeintel,P1,Should,Hardening,NFR,scan_cost,EPIC-DG-05,,unit+integration,TC-DG-06-008-02,Planned,Delta fingerprint includes commit policy_version scan_layers
+EPIC-DG-07,US-DG-07-010,AC-DG-07-010-01,L9,C1-C4,connectors,P1,Should,MVP,Functional,,EPIC-DG-13,,integration,TC-DG-07-010-01,Planned,Alibaba connector emits ActionTrail OSS ACK signals per mapping
+EPIC-DG-08,US-DG-08-009,AC-DG-08-009-01,L10,L11/L12,compliance-engine,P1,Should,MVP,Functional,,EPIC-DG-01,,unit+integration,TC-DG-08-009-01,Planned,Failed Athena batch does not discard prior batch findings
+EPIC-DG-09,US-DG-09-006,AC-DG-09-006-01,L11,L12,remediation-reporting,P0,Must,MVP,Functional,,EPIC-DG-13,,unit+integration,TC-DG-09-006-01,Planned,Patch validator rejects new import lines without override
+EPIC-DG-10,US-DG-10-007,AC-DG-10-007-01,L11,L12,remediation-reporting,P1,Should,MVP,Functional,,,,unit+integration,TC-DG-10-007-01,Planned,Markdown report artefact stored with checksum
+EPIC-DG-11,US-DG-11-009,AC-DG-11-009-01,L13,C5,observability,P1,Should,Hardening,Functional,,,US-DG-13-001,integration,TC-DG-11-009-01,Planned,LANGCHAIN_TRACING_V2 false implies no LangSmith network calls
+EPIC-DG-12,US-DG-12-009,AC-DG-12-009-01,L3,L4-C5,frontend,P1,Should,MVP,Functional,,EPIC-DG-08,,bdd+integration,TC-DG-12-009-01,Planned,Cross-layer findings page lists layers and evidence links
+EPIC-DG-13,US-DG-13-010,AC-DG-13-010-01,L14,C0-C5,security-deployment,P0,Must,Hardening,Functional,,,,integration,TC-DG-13-010-01,Planned,Egress allowlist documented per deployment mode

@@ -6,9 +6,14 @@ export default defineConfig({
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 1 : 0,
   workers: process.env.CI ? 1 : undefined,
-  /* HTML report: open with `npx playwright show-report playwright-report`.
+  /* HTML report: `npx playwright show-report playwright-report` (default UI often http://127.0.0.1:9324 ).
    * Each BDD step uses `stepScreenshot()` to attach a full-page PNG under that step. */
-  reporter: [["list"], ["html", { open: "never", outputFolder: "playwright-report" }]],
+  reporter: [
+    ["list"],
+    ["html", { open: "never", outputFolder: "playwright-report" }],
+    /* Used by scripts/playwright_bdd_report_to_pdf.py to build one PDF with step screenshots. */
+    ["json", { outputFile: "playwright-report/results.json" }],
+  ],
   use: {
     baseURL: "http://127.0.0.1:3000",
     trace: process.env.PW_TRACE === "1" ? "on" : "on-first-retry",

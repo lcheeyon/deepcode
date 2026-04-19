@@ -1,6 +1,6 @@
 # EPIC-DG-10 — Report assembly & PDF (Penelope)
 
-> **AC-level test specifications (generated):** Squad copy [`squads/remediation-reporting/EPIC-DG-10-detailed.md`](squads/remediation-reporting/EPIC-DG-10-detailed.md); per-AC rows [`traceability-ac-detail-matrix.csv`](traceability-ac-detail-matrix.csv). Regenerate: `python3 scripts/generate_ac_details_and_squad_docs.py`.
+> **AC-level test specifications (generated):** Squad copy [`squads/remediation-reporting/EPIC-DG-10-detailed.md`](squads/remediation-reporting/EPIC-DG-10-detailed.md); per-AC rows [`traceability-ac-detail-matrix.csv`](traceability-ac-detail-matrix.csv), JSON [`traceability-ac-detail.json`](traceability-ac-detail.json). Regenerate: `python3 scripts/generate_ac_details_and_squad_docs.py` then `python3 scripts/validate_user_stories_traceability.py`.
 
 
 **Goal:** Deterministically assemble audit-grade PDFs with CJK support, structured sections, and encrypted object storage per `Architecture_Design.md` §18, §32.

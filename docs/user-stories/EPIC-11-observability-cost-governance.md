@@ -1,6 +1,6 @@
 # EPIC-DG-11 — Observability, evaluation & cost governance
 
-> **AC-level test specifications (generated):** Squad copy [`squads/observability/EPIC-DG-11-detailed.md`](squads/observability/EPIC-DG-11-detailed.md); per-AC rows [`traceability-ac-detail-matrix.csv`](traceability-ac-detail-matrix.csv). Regenerate: `python3 scripts/generate_ac_details_and_squad_docs.py`.
+> **AC-level test specifications (generated):** Squad copy [`squads/observability/EPIC-DG-11-detailed.md`](squads/observability/EPIC-DG-11-detailed.md); per-AC rows [`traceability-ac-detail-matrix.csv`](traceability-ac-detail-matrix.csv), JSON [`traceability-ac-detail.json`](traceability-ac-detail.json). Regenerate: `python3 scripts/generate_ac_details_and_squad_docs.py` then `python3 scripts/validate_user_stories_traceability.py`.
 
 
 **Goal:** Dual observability (LangSmith + LangFuse), per-tenant cost accounting, alerting, and evaluation gates per `Architecture_Design.md` §7–§8, §21, §33.

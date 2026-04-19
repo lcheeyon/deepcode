@@ -9,12 +9,9 @@ import { Button } from "./ui/button";
 const nav = [
   { href: "/dashboard", label: "Dashboard" },
   { href: "/scans", label: "Scans" },
-];
-
-const disabledNav = [
-  { label: "Findings" },
-  { label: "Policies" },
-  { label: "Reports" },
+  { href: "/findings", label: "Findings" },
+  { href: "/policies", label: "Policies" },
+  { href: "/reports", label: "Reports" },
 ];
 
 function NavLink({
@@ -81,16 +78,6 @@ export function AppShell({ children }: { children: ReactNode }) {
             onNavigate={closeDrawer}
           />
         ))}
-        {disabledNav.map((n) => (
-          <span
-            key={n.label}
-            title="Not available in API yet"
-            className="cursor-not-allowed rounded-dg-md px-3 py-2 text-sm text-dg-text-disabled"
-            aria-disabled
-          >
-            {n.label}
-          </span>
-        ))}
         <div className="mt-auto">
           <NavLink
             href="/settings"
@@ -149,9 +136,15 @@ export function AppShell({ children }: { children: ReactNode }) {
                     ? "Scans › Detail"
                     : pathname.startsWith("/scans")
                       ? "Scans"
-                      : pathname.startsWith("/settings")
-                        ? "Settings"
-                        : "DeepGuard"}
+                      : pathname.startsWith("/findings")
+                        ? "Findings"
+                        : pathname.startsWith("/policies")
+                          ? "Policies"
+                          : pathname.startsWith("/reports")
+                            ? "Reports"
+                            : pathname.startsWith("/settings")
+                              ? "Settings"
+                              : "DeepGuard"}
             </span>
           </div>
           <div className="flex items-center gap-2">

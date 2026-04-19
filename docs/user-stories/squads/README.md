@@ -1,6 +1,6 @@
 # User stories by squad (generated + maintained)
 
-Each **`EPIC-DG-NN-detailed.md`** file is produced by `scripts/generate_ac_details_and_squad_docs.py`. It mirrors the canonical [`EPIC-NN-*.md`](../) file and appends a **test specification** subsection per AC.
+Each `EPIC-DG-NN-detailed.md` file mirrors canonical backlog and appends full AC metadata + DoD checklist.
 
 | Squad | Epics | Path |
 |-------|-------|------|
@@ -22,6 +22,7 @@ Each **`EPIC-DG-NN-detailed.md`** file is produced by `scripts/generate_ac_detai
 python3 scripts/generate_ac_details_and_squad_docs.py
 ```
 
-## Machine-readable matrix
+## Machine-readable exports
 
-All AC rows: [`../traceability-ac-detail-matrix.csv`](../traceability-ac-detail-matrix.csv).
+- CSV: [`../traceability-ac-detail-matrix.csv`](../traceability-ac-detail-matrix.csv)
+- JSON: [`../traceability-ac-detail.json`](../traceability-ac-detail.json)

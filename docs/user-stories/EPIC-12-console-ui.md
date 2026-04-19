@@ -1,6 +1,6 @@
 # EPIC-DG-12 — Web console & operator experience (Next.js)
 
-> **AC-level test specifications (generated):** Squad copy [`squads/frontend/EPIC-DG-12-detailed.md`](squads/frontend/EPIC-DG-12-detailed.md); per-AC rows [`traceability-ac-detail-matrix.csv`](traceability-ac-detail-matrix.csv). Regenerate: `python3 scripts/generate_ac_details_and_squad_docs.py`.
+> **AC-level test specifications (generated):** Squad copy [`squads/frontend/EPIC-DG-12-detailed.md`](squads/frontend/EPIC-DG-12-detailed.md); per-AC rows [`traceability-ac-detail-matrix.csv`](traceability-ac-detail-matrix.csv), JSON [`traceability-ac-detail.json`](traceability-ac-detail.json). Regenerate: `python3 scripts/generate_ac_details_and_squad_docs.py` then `python3 scripts/validate_user_stories_traceability.py`.
 
 
 **Goal:** Provide a cohesive UI (per business architecture: Next.js 14 + Tailwind) for configuring scans, monitoring progress, triaging findings, downloading reports, and administering policies — aligned to API capabilities in §28.
@@ -254,3 +254,44 @@
 - **AC-DG-12-014-01:** Settings persist in `tenants.runtime_config` or dedicated columns per ADR.
 - **AC-DG-12-014-02:** Overrides on single scan allowed only where EPIC-DG-03 permits.
 - **AC-DG-12-014-03:** Dangerous retention below legal minimum blocked with validation error.
+
+---
+
+## US-DG-12-015 — First-party run timeline (backend contract)
+
+**As a** security analyst, **I want** the control plane to persist **structured scan run events** (`node_progress`, **`agent_handoff`**, **`otel_span_mirror`**, errors) keyed by **`scan_id`** and **`correlation_id`**, **so that** the console timeline is authoritative without vendor SaaS.
+
+**Acceptance criteria**
+
+- **AC-DG-12-015-01:** Worker writes **`scan_run_events`** (Postgres) on graph stream ticks and on failures; optional **`graph_version`** and **`correlation_id`** on each row.
+- **AC-DG-12-015-02:** Events are the **join key** for EPIC-DG-11 metadata (`documentation/langstack-usage-and-roadmap.md` §8) and for **SSE** fan-out (EPIC-DG-14-016).
+
+---
+
+## US-DG-12-016 — OTEL-neutral timeline mirror
+
+**As an** air-gap operator, **I want** **OTEL-aligned** summaries (`otel_span_mirror`) in the same event stream as graph progress, **so that** internal spans and first-party DB timelines stay aligned without LangSmith.
+
+**Acceptance criteria**
+
+- **AC-DG-12-016-01:** For each completed graph node step, the worker emits an **`otel_span_mirror`** event carrying **`span_name`** (`graph.node.<id>`) and **`observation_kind`** consistent with **`graph_node_span`** attributes.
+
+---
+
+## US-DG-12-017 — Explicit agent handoffs
+
+**As a** developer, **I want** **handoff** events (**from_agent → to_agent**, **message_type**, redacted summary) emitted during the scan pipeline, **so that** UI can draw agent interaction graphs without inferring them from LangSmith trees alone.
+
+**Acceptance criteria**
+
+- **AC-DG-12-017-01:** Handoffs are persisted as **`agent_handoff`** rows (same `scan_run_events` table) with stable **`message_type`** values (`graph_edge`, `fan_out`, etc. as implemented).
+
+---
+
+## US-DG-12-018 — Vendor trace persistence
+
+**As a** tenant admin, **I want** LangSmith / LangFuse **run or trace identifiers** stored per scan when tracing is enabled, **so that** **`GET /v1/scans/{id}/trace-links`** can deep-link operators to the right project UI.
+
+**Acceptance criteria**
+
+- **AC-DG-12-018-01:** Worker upserts **`scan_external_trace_refs`** after Odysseus completes (LangSmith root run id from a LangChain callback when tracing is on); LangFuse row reserved for future callback enrichment.

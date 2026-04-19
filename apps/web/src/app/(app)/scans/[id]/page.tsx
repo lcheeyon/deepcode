@@ -6,7 +6,7 @@ import { useCallback, useEffect, useState } from "react";
 import { loadConnectionSettings } from "@/lib/connection-settings";
 import { upsertRecentScan } from "@/lib/recent-scans";
 import { apiFetch, parseJson } from "@/lib/api-client";
-import type { ScanResponse } from "@/lib/api-types";
+import type { ArtifactsListResponse, ScanResponse, ScanWorkflowResponse } from "@/lib/api-types";
 import { useToast } from "@/components/toast-context";
 import { ScanStatusBadge } from "@/components/scan-status-badge";
 import { Button } from "@/components/ui/button";
@@ -21,6 +21,8 @@ export default function ScanDetailPage() {
   const [expanded, setExpanded] = useState(false);
   const [cancelOpen, setCancelOpen] = useState(false);
   const [cancelling, setCancelling] = useState(false);
+  const [artifacts, setArtifacts] = useState<ArtifactsListResponse["artifacts"] | null>(null);
+  const [workflow, setWorkflow] = useState<ScanWorkflowResponse | null>(null);
 
   const load = useCallback(async () => {
     if (!scanId) return;
@@ -29,10 +31,12 @@ export default function ScanDetailPage() {
       const res = await apiFetch(s, `/v1/scans/${scanId}`, { method: "GET" });
       if (res.status === 404) {
         setScan(null);
+        setWorkflow(null);
         return;
       }
       if (!res.ok) {
         setScan(null);
+        setWorkflow(null);
         return;
       }
       const body = await parseJson<ScanResponse>(res);
@@ -42,8 +46,28 @@ export default function ScanDetailPage() {
         updated_at: body.updated_at,
         status: body.status,
       });
+      if (body.status === "COMPLETE") {
+        const ar = await apiFetch(s, `/v1/scans/${scanId}/artifacts`, { method: "GET" });
+        if (ar.ok) {
+          const aj = await parseJson<ArtifactsListResponse>(ar);
+          setArtifacts(aj.artifacts ?? []);
+        } else {
+          setArtifacts(null);
+        }
+      } else {
+        setArtifacts(null);
+      }
+      const wf = await apiFetch(s, `/v1/scans/${scanId}/workflow?include_events=true`, {
+        method: "GET",
+      });
+      if (wf.ok) {
+        setWorkflow(await parseJson<ScanWorkflowResponse>(wf));
+      } else {
+        setWorkflow(null);
+      }
     } catch {
       setScan(null);
+      setWorkflow(null);
     }
   }, [scanId]);
 
@@ -149,6 +173,93 @@ export default function ScanDetailPage() {
           <p className="mt-2 text-sm text-dg-warning">Cancellation requested.</p>
         ) : null}
       </Card>
+
+      {scan.status === "COMPLETE" ? (
+        <Card className="mb-6">
+          <h2 className="mb-3 text-base font-semibold">Triage & reports</h2>
+          <div className="flex flex-wrap gap-2">
+            <Link href={`/findings?scan_id=${encodeURIComponent(scan.scan_id)}`}>
+              <Button variant="secondary" size="sm" type="button">
+                Open findings
+              </Button>
+            </Link>
+            <Link href={`/reports?scan_id=${encodeURIComponent(scan.scan_id)}`}>
+              <Button variant="secondary" size="sm" type="button">
+                Open reports
+              </Button>
+            </Link>
+          </div>
+          {artifacts && artifacts.length ? (
+            <p className="mt-3 text-xs text-dg-text-muted">
+              Latest PDF checksum:{" "}
+              <span className="font-mono">{artifacts[0]?.checksum_sha256.slice(0, 16)}…</span>
+            </p>
+          ) : null}
+        </Card>
+      ) : null}
+
+      {workflow ? (
+        <Card className="mb-6">
+          <h2 className="mb-3 text-base font-semibold">Workflow (first-party)</h2>
+          {workflow.correlation_id ? (
+            <p className="mb-2 font-mono text-xs text-dg-text-muted">
+              Correlation {workflow.correlation_id}
+            </p>
+          ) : null}
+          <div className="mb-4 flex flex-wrap gap-2">
+            {workflow.checklist.map((c) => (
+              <span
+                key={c.node}
+                className="rounded-dg-sm border border-dg-border-subtle px-2 py-1 font-mono text-xs"
+              >
+                {c.node}: {c.state}
+              </span>
+            ))}
+          </div>
+          {workflow.handoffs.length ? (
+            <div className="mb-3">
+              <h3 className="mb-1 text-sm font-medium text-dg-text-muted">Handoffs</h3>
+              <ul className="list-inside list-disc text-sm">
+                {workflow.handoffs.slice(0, 12).map((h, i) => (
+                  <li key={i} className="font-mono text-xs">
+                    {h.from_agent} → {h.to_agent} ({h.message_type})
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ) : null}
+          {workflow.trace_links.some((t) => t.url) ? (
+            <div className="mb-3 flex flex-wrap gap-2">
+              {workflow.trace_links
+                .filter((t) => t.url)
+                .map((t) => (
+                  <a
+                    key={t.vendor}
+                    href={t.url!}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-sm text-dg-brand-primary underline"
+                  >
+                    Open {t.vendor} trace
+                  </a>
+                ))}
+            </div>
+          ) : null}
+          {workflow.events.length ? (
+            <div>
+              <h3 className="mb-1 text-sm font-medium text-dg-text-muted">Recent events</h3>
+              <ul className="max-h-40 space-y-1 overflow-y-auto font-mono text-[11px] text-dg-text-muted">
+                {workflow.events.slice(-12).map((e) => (
+                  <li key={e.id}>
+                    #{e.event_seq} {e.event_type}
+                    {e.node ? ` ${e.node}` : ""}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ) : null}
+        </Card>
+      ) : null}
 
       <Card className="mb-6">
         <div className="mb-2 flex items-center justify-between">

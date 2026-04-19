@@ -34,7 +34,8 @@ export async function apiFetch(
   for (const [k, v] of Object.entries(auth)) {
     headers.set(k, v);
   }
-  if (init.body && !headers.has("Content-Type")) {
+  const isForm = typeof FormData !== "undefined" && init.body instanceof FormData;
+  if (init.body && !headers.has("Content-Type") && !isForm) {
     headers.set("Content-Type", "application/json");
   }
   return fetch(url, { ...init, headers });

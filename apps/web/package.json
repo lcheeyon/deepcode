@@ -8,8 +8,11 @@
     "start": "next start",
     "lint": "next lint",
     "test:e2e": "playwright test",
+    "test:e2e:live": "E2E_LIVE_BACKEND=1 playwright test e2e-live-control-plane.spec.ts",
     "test:e2e:ui": "playwright test --ui",
-    "test:e2e:compose": "E2E_REAL_API=1 playwright test e2e/repo-upload-minio.spec.ts"
+    "test:e2e:compose": "E2E_REAL_API=1 playwright test e2e/repo-upload-minio.spec.ts",
+    "test:e2e:power-rag": "E2E_POWER_RAG_BACKEND=1 playwright test e2e/bdd-console-power-rag.spec.ts",
+    "report:bdd-pdf": "python3 ../../scripts/playwright_bdd_report_to_pdf.py --report-dir playwright-report --output ../../reports/playwright-bdd-report.pdf"
   },
   "dependencies": {
     "next": "14.2.35",

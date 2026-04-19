@@ -1,6 +1,6 @@
 # EPIC-DG-08 — Compliance mapping & cross-layer reasoning (Athena)
 
-> **AC-level test specifications (generated):** Squad copy [`squads/compliance-engine/EPIC-DG-08-detailed.md`](squads/compliance-engine/EPIC-DG-08-detailed.md); per-AC rows [`traceability-ac-detail-matrix.csv`](traceability-ac-detail-matrix.csv). Regenerate: `python3 scripts/generate_ac_details_and_squad_docs.py`.
+> **AC-level test specifications (generated):** Squad copy [`squads/compliance-engine/EPIC-DG-08-detailed.md`](squads/compliance-engine/EPIC-DG-08-detailed.md); per-AC rows [`traceability-ac-detail-matrix.csv`](traceability-ac-detail-matrix.csv), JSON [`traceability-ac-detail.json`](traceability-ac-detail.json). Regenerate: `python3 scripts/generate_ac_details_and_squad_docs.py` then `python3 scripts/validate_user_stories_traceability.py`.
 
 
 **Goal:** Map controls to PASS/FAIL/PARTIAL/NA with evidence, run generator–critic reconciliation, emit cross-layer composite findings, and expose confidence for governance per `Architecture_Design.md` §3, §16, §18.

@@ -24,6 +24,38 @@ def _initial_repo_commit_sha(body: CreateScanRequest) -> str | None:
 
 
 @dataclass(frozen=True, slots=True)
+class ScanRunEventRow:
+    """One persisted workflow / timeline row (``scan_run_events``)."""
+
+    id: UUID
+    tenant_id: UUID
+    scan_id: UUID
+    event_seq: int
+    event_type: str
+    node: str | None
+    correlation_id: str | None
+    graph_version: str | None
+    payload: dict[str, Any]
+    created_at: datetime
+
+
+@dataclass(frozen=True, slots=True)
+class ExternalTraceRefRow:
+    """LangSmith / LangFuse pointers for deep links."""
+
+    id: UUID
+    tenant_id: UUID
+    scan_id: UUID
+    vendor: str
+    root_run_id: str | None
+    trace_id: str | None
+    project_id: str | None
+    workspace_id: str | None
+    trace_metadata: dict[str, Any]
+    updated_at: datetime
+
+
+@dataclass(frozen=True, slots=True)
 class ScanRow:
     """Normalized scan row for repository ↔ API boundary."""
 
@@ -39,6 +71,7 @@ class ScanRow:
     repo_commit_sha: str | None
     cancellation_requested: bool = False
     reused_from_idempotency: bool = False
+    report_artifact_id: UUID | None = None
 
     def to_response(self) -> ScanResponse:
         return ScanResponse(
@@ -53,6 +86,7 @@ class ScanRow:
             idempotency_key=self.idempotency_key,
             repo_commit_sha=self.repo_commit_sha,
             cancellation_requested=self.cancellation_requested,
+            report_artifact_id=self.report_artifact_id,
         )
 
 
@@ -84,6 +118,14 @@ class ScanRepository(Protocol):
         error_message: str,
     ) -> None: ...
 
+    async def mark_scan_awaiting_review(
+        self,
+        *,
+        tenant_id: UUID,
+        scan_id: UUID,
+        message: str | None = None,
+    ) -> None: ...
+
     async def mark_scan_complete_with_report(
         self,
         *,
@@ -104,6 +146,44 @@ class ScanRepository(Protocol):
         percent_complete: int,
     ) -> None: ...
 
+    async def append_scan_run_event(
+        self,
+        *,
+        tenant_id: UUID,
+        scan_id: UUID,
+        event_type: str,
+        node: str | None,
+        payload: dict[str, Any],
+        correlation_id: str | None,
+        graph_version: str | None = None,
+    ) -> ScanRunEventRow: ...
+
+    async def list_scan_run_events(
+        self,
+        *,
+        tenant_id: UUID,
+        scan_id: UUID,
+        since_event_seq: int = 0,
+        limit: int = 500,
+    ) -> list[ScanRunEventRow]: ...
+
+    async def upsert_external_trace_ref(
+        self,
+        *,
+        tenant_id: UUID,
+        scan_id: UUID,
+        vendor: str,
+        root_run_id: str | None = None,
+        trace_id: str | None = None,
+        project_id: str | None = None,
+        workspace_id: str | None = None,
+        metadata: dict[str, Any] | None = None,
+    ) -> None: ...
+
+    async def list_external_trace_refs(
+        self, *, tenant_id: UUID, scan_id: UUID
+    ) -> list[ExternalTraceRefRow]: ...
+
 
 class MemoryScanRepository:
     """In-process store for fast API tests (no Docker)."""
@@ -112,11 +192,37 @@ class MemoryScanRepository:
         self._rows: dict[UUID, ScanRow] = {}
         self._idempotency: dict[tuple[UUID, str], UUID] = {}
         self._report_artifacts: dict[UUID, dict[str, Any]] = {}
+        self._workflow_events: dict[tuple[UUID, UUID], list[ScanRunEventRow]] = {}
+        self._trace_refs: dict[tuple[UUID, UUID], dict[str, ExternalTraceRefRow]] = {}
+        self._event_seq_ctr = 0
 
     def report_storage_meta(self, scan_id: UUID) -> dict[str, Any] | None:
         """Return last persisted report artifact metadata (memory store; tests / diagnostics)."""
 
         return self._report_artifacts.get(scan_id)
+
+    def report_pdf_download(
+        self, *, scan_id: UUID, artifact_id: UUID
+    ) -> tuple[bytes, str, str, datetime] | None:
+        """Return ``(pdf_bytes, checksum_hex, storage_uri, created_at)`` if ids match."""
+
+        meta = self._report_artifacts.get(scan_id)
+        if meta is None:
+            return None
+        if str(meta.get("artifact_id")) != str(artifact_id):
+            return None
+        raw = meta.get("pdf_bytes")
+        if not isinstance(raw, (bytes, bytearray)):
+            return None
+        created = meta.get("created_at")
+        if not isinstance(created, datetime):
+            created = datetime.now(UTC)
+        return (
+            bytes(raw),
+            str(meta.get("checksum_sha256", "")),
+            str(meta.get("storage_uri", "")),
+            created,
+        )
 
     def _put(self, row: ScanRow) -> None:
         self._rows[row.id] = row
@@ -151,6 +257,7 @@ class MemoryScanRepository:
             repo_commit_sha=repo_sha,
             cancellation_requested=False,
             reused_from_idempotency=False,
+            report_artifact_id=None,
         )
         self._put(row)
         if idempotency_key:
@@ -229,6 +336,27 @@ class MemoryScanRepository:
             )
         )
 
+    async def mark_scan_awaiting_review(
+        self,
+        *,
+        tenant_id: UUID,
+        scan_id: UUID,
+        message: str | None = None,
+    ) -> None:
+        row = await self.get_scan(tenant_id=tenant_id, scan_id=scan_id)
+        if row is None:
+            return
+        self._put(
+            replace(
+                row,
+                status="AWAITING_REVIEW",
+                current_stage="AWAITING_REVIEW",
+                percent_complete=max(row.percent_complete, 55),
+                updated_at=datetime.now(UTC),
+            )
+        )
+        _ = message
+
     async def mark_scan_complete_with_report(
         self,
         *,
@@ -249,6 +377,8 @@ class MemoryScanRepository:
             "storage_uri": storage_uri,
             "checksum_sha256": digest,
             "size_bytes": len(pdf_bytes),
+            "pdf_bytes": pdf_bytes,
+            "created_at": datetime.now(UTC),
         }
         self._put(
             replace(
@@ -257,6 +387,7 @@ class MemoryScanRepository:
                 current_stage="COMPLETE",
                 percent_complete=100,
                 updated_at=datetime.now(UTC),
+                report_artifact_id=aid,
             )
         )
         return aid
@@ -286,6 +417,96 @@ class MemoryScanRepository:
                 updated_at=datetime.now(UTC),
             )
         )
+
+    async def append_scan_run_event(
+        self,
+        *,
+        tenant_id: UUID,
+        scan_id: UUID,
+        event_type: str,
+        node: str | None,
+        payload: dict[str, Any],
+        correlation_id: str | None,
+        graph_version: str | None = None,
+    ) -> ScanRunEventRow:
+        row = await self.get_scan(tenant_id=tenant_id, scan_id=scan_id)
+        if row is None:
+            msg = "scan not found"
+            raise ValueError(msg)
+        self._event_seq_ctr += 1
+        eid = uuid4()
+        now = datetime.now(UTC)
+        ev = ScanRunEventRow(
+            id=eid,
+            tenant_id=tenant_id,
+            scan_id=scan_id,
+            event_seq=self._event_seq_ctr,
+            event_type=event_type[:128],
+            node=node[:256] if node else None,
+            correlation_id=correlation_id[:512] if correlation_id else None,
+            graph_version=graph_version[:128] if graph_version else None,
+            payload=dict(payload),
+            created_at=now,
+        )
+        key = (tenant_id, scan_id)
+        self._workflow_events.setdefault(key, []).append(ev)
+        return ev
+
+    async def list_scan_run_events(
+        self,
+        *,
+        tenant_id: UUID,
+        scan_id: UUID,
+        since_event_seq: int = 0,
+        limit: int = 500,
+    ) -> list[ScanRunEventRow]:
+        key = (tenant_id, scan_id)
+        rows = [r for r in self._workflow_events.get(key, []) if r.event_seq > since_event_seq]
+        rows.sort(key=lambda r: r.event_seq)
+        return rows[:limit]
+
+    async def upsert_external_trace_ref(
+        self,
+        *,
+        tenant_id: UUID,
+        scan_id: UUID,
+        vendor: str,
+        root_run_id: str | None = None,
+        trace_id: str | None = None,
+        project_id: str | None = None,
+        workspace_id: str | None = None,
+        metadata: dict[str, Any] | None = None,
+    ) -> None:
+        row = await self.get_scan(tenant_id=tenant_id, scan_id=scan_id)
+        if row is None:
+            return
+        now = datetime.now(UTC)
+        key = (tenant_id, scan_id)
+        bucket = self._trace_refs.setdefault(key, {})
+        prev = bucket.get(vendor)
+        rid = prev.id if prev else uuid4()
+        rr = root_run_id if root_run_id is not None else (prev.root_run_id if prev else None)
+        tr = trace_id if trace_id is not None else (prev.trace_id if prev else None)
+        pr = project_id if project_id is not None else (prev.project_id if prev else None)
+        ws = workspace_id if workspace_id is not None else (prev.workspace_id if prev else None)
+        bucket[vendor] = ExternalTraceRefRow(
+            id=rid,
+            tenant_id=tenant_id,
+            scan_id=scan_id,
+            vendor=vendor[:64],
+            root_run_id=rr,
+            trace_id=tr,
+            project_id=pr,
+            workspace_id=ws,
+            trace_metadata={**(prev.trace_metadata if prev else {}), **(metadata or {})},
+            updated_at=now,
+        )
+
+    async def list_external_trace_refs(
+        self, *, tenant_id: UUID, scan_id: UUID
+    ) -> list[ExternalTraceRefRow]:
+        key = (tenant_id, scan_id)
+        return list(self._trace_refs.get(key, {}).values())
 
 
 class PostgresScanRepository:
@@ -335,6 +556,7 @@ class PostgresScanRepository:
             repo_commit_sha=m.get("repo_commit_sha"),
             cancellation_requested=bool(m.get("cancellation_requested", False)),
             reused_from_idempotency=reused,
+            report_artifact_id=m.get("report_artifact_id"),
         )
 
     async def create_scan(
@@ -388,11 +610,16 @@ class PostgresScanRepository:
         res = await self._session.execute(
             text(
                 """
-                SELECT id, tenant_id, status, current_stage, percent_complete,
-                       job_config, created_at, updated_at, idempotency_key, repo_commit_sha,
-                       cancellation_requested
-                FROM scans
-                WHERE id = CAST(:sid AS uuid) AND tenant_id = CAST(:tid AS uuid)
+                SELECT s.id, s.tenant_id, s.status, s.current_stage, s.percent_complete,
+                       s.job_config, s.created_at, s.updated_at, s.idempotency_key,
+                       s.repo_commit_sha, s.cancellation_requested,
+                       (SELECT a.id FROM artifacts a
+                        WHERE a.scan_id = s.id AND a.tenant_id = s.tenant_id
+                          AND a.kind = 'report_pdf'
+                        ORDER BY a.created_at DESC
+                        LIMIT 1) AS report_artifact_id
+                FROM scans s
+                WHERE s.id = CAST(:sid AS uuid) AND s.tenant_id = CAST(:tid AS uuid)
                 """
             ),
             {"sid": str(scan_id), "tid": str(tenant_id)},
@@ -486,6 +713,34 @@ class PostgresScanRepository:
                     "tid": str(tenant_id),
                     "ec": error_code[:256],
                     "em": error_message[:8192],
+                },
+            )
+
+    async def mark_scan_awaiting_review(
+        self,
+        *,
+        tenant_id: UUID,
+        scan_id: UUID,
+        message: str | None = None,
+    ) -> None:
+        async with self._session.begin():
+            await self._session.execute(
+                text(
+                    """
+                    UPDATE scans
+                    SET status = 'AWAITING_REVIEW',
+                        current_stage = 'AWAITING_REVIEW',
+                        percent_complete = GREATEST(percent_complete, 55),
+                        updated_at = now(),
+                        error_code = NULL,
+                        error_message = :msg
+                    WHERE id = CAST(:sid AS uuid) AND tenant_id = CAST(:tid AS uuid)
+                    """
+                ),
+                {
+                    "sid": str(scan_id),
+                    "tid": str(tenant_id),
+                    "msg": (message or "")[:8192] or None,
                 },
             )
 
@@ -590,3 +845,194 @@ class PostgresScanRepository:
                     "tid": str(tenant_id),
                 },
             )
+
+    async def append_scan_run_event(
+        self,
+        *,
+        tenant_id: UUID,
+        scan_id: UUID,
+        event_type: str,
+        node: str | None,
+        payload: dict[str, Any],
+        correlation_id: str | None,
+        graph_version: str | None = None,
+    ) -> ScanRunEventRow:
+        payload_json = json.dumps(payload)
+        async with self._session.begin():
+            res = await self._session.execute(
+                text(
+                    """
+                    INSERT INTO scan_run_events (
+                        tenant_id, scan_id, event_type, node, correlation_id,
+                        graph_version, payload
+                    ) VALUES (
+                        CAST(:tid AS uuid), CAST(:sid AS uuid), :etype, :node, :corr,
+                        :gver, CAST(:payload AS jsonb)
+                    )
+                    RETURNING id, tenant_id, scan_id, event_seq, event_type, node,
+                              correlation_id, graph_version, payload, created_at
+                    """
+                ),
+                {
+                    "tid": str(tenant_id),
+                    "sid": str(scan_id),
+                    "etype": event_type[:128],
+                    "node": node[:256] if node else None,
+                    "corr": correlation_id[:512] if correlation_id else None,
+                    "gver": graph_version[:128] if graph_version else None,
+                    "payload": payload_json,
+                },
+            )
+            m = res.mappings().one()
+        pl = m["payload"]
+        if isinstance(pl, str):
+            pl = json.loads(pl)
+        elif not isinstance(pl, dict):
+            pl = dict(pl)
+        return ScanRunEventRow(
+            id=m["id"],
+            tenant_id=m["tenant_id"],
+            scan_id=m["scan_id"],
+            event_seq=int(m["event_seq"]),
+            event_type=str(m["event_type"]),
+            node=m.get("node"),
+            correlation_id=m.get("correlation_id"),
+            graph_version=m.get("graph_version"),
+            payload=pl,
+            created_at=m["created_at"],
+        )
+
+    async def list_scan_run_events(
+        self,
+        *,
+        tenant_id: UUID,
+        scan_id: UUID,
+        since_event_seq: int = 0,
+        limit: int = 500,
+    ) -> list[ScanRunEventRow]:
+        res = await self._session.execute(
+            text(
+                """
+                SELECT id, tenant_id, scan_id, event_seq, event_type, node,
+                       correlation_id, graph_version, payload, created_at
+                FROM scan_run_events
+                WHERE tenant_id = CAST(:tid AS uuid)
+                  AND scan_id = CAST(:sid AS uuid)
+                  AND event_seq > :since
+                ORDER BY event_seq ASC
+                LIMIT :lim
+                """
+            ),
+            {"tid": str(tenant_id), "sid": str(scan_id), "since": since_event_seq, "lim": limit},
+        )
+        out: list[ScanRunEventRow] = []
+        for m in res.mappings().all():
+            pl = m["payload"]
+            if isinstance(pl, str):
+                pl = json.loads(pl)
+            elif not isinstance(pl, dict):
+                pl = dict(pl)
+            out.append(
+                ScanRunEventRow(
+                    id=m["id"],
+                    tenant_id=m["tenant_id"],
+                    scan_id=m["scan_id"],
+                    event_seq=int(m["event_seq"]),
+                    event_type=str(m["event_type"]),
+                    node=m.get("node"),
+                    correlation_id=m.get("correlation_id"),
+                    graph_version=m.get("graph_version"),
+                    payload=pl,
+                    created_at=m["created_at"],
+                )
+            )
+        return out
+
+    async def upsert_external_trace_ref(
+        self,
+        *,
+        tenant_id: UUID,
+        scan_id: UUID,
+        vendor: str,
+        root_run_id: str | None = None,
+        trace_id: str | None = None,
+        project_id: str | None = None,
+        workspace_id: str | None = None,
+        metadata: dict[str, Any] | None = None,
+    ) -> None:
+        meta = json.dumps(metadata or {})
+        async with self._session.begin():
+            await self._session.execute(
+                text(
+                    """
+                    INSERT INTO scan_external_trace_refs (
+                        tenant_id, scan_id, vendor, root_run_id, trace_id,
+                        project_id, workspace_id, trace_metadata, updated_at
+                    ) VALUES (
+                        CAST(:tid AS uuid), CAST(:sid AS uuid), :vendor, :rr, :tr,
+                        :pid, :wid, CAST(:meta AS jsonb), now()
+                    )
+                    ON CONFLICT (tenant_id, scan_id, vendor)
+                    DO UPDATE SET
+                        root_run_id = COALESCE(EXCLUDED.root_run_id,
+                            scan_external_trace_refs.root_run_id),
+                        trace_id = COALESCE(EXCLUDED.trace_id,
+                            scan_external_trace_refs.trace_id),
+                        project_id = COALESCE(EXCLUDED.project_id,
+                            scan_external_trace_refs.project_id),
+                        workspace_id = COALESCE(EXCLUDED.workspace_id,
+                            scan_external_trace_refs.workspace_id),
+                        trace_metadata = scan_external_trace_refs.trace_metadata
+                            || EXCLUDED.trace_metadata,
+                        updated_at = now()
+                    """
+                ),
+                {
+                    "tid": str(tenant_id),
+                    "sid": str(scan_id),
+                    "vendor": vendor[:64],
+                    "rr": root_run_id,
+                    "tr": trace_id,
+                    "pid": project_id,
+                    "wid": workspace_id,
+                    "meta": meta,
+                },
+            )
+
+    async def list_external_trace_refs(
+        self, *, tenant_id: UUID, scan_id: UUID
+    ) -> list[ExternalTraceRefRow]:
+        res = await self._session.execute(
+            text(
+                """
+                SELECT id, tenant_id, scan_id, vendor, root_run_id, trace_id,
+                       project_id, workspace_id, trace_metadata, updated_at
+                FROM scan_external_trace_refs
+                WHERE tenant_id = CAST(:tid AS uuid) AND scan_id = CAST(:sid AS uuid)
+                ORDER BY vendor
+                """
+            ),
+            {"tid": str(tenant_id), "sid": str(scan_id)},
+        )
+        out: list[ExternalTraceRefRow] = []
+        for m in res.mappings().all():
+            meta = m["trace_metadata"]
+            if isinstance(meta, str):
+                meta = json.loads(meta)
+            elif not isinstance(meta, dict):
+                meta = dict(meta)
+            out.append(
+                ExternalTraceRefRow(
+                    id=m["id"],
+                    tenant_id=m["tenant_id"],
+                    scan_id=m["scan_id"],
+                    vendor=str(m["vendor"]),
+                    root_run_id=m.get("root_run_id"),
+                    trace_id=m.get("trace_id"),
+                    project_id=m.get("project_id"),
+                    workspace_id=m.get("workspace_id"),
+                    trace_metadata=meta,
+                    updated_at=m["updated_at"],
+                )
+            )
+        return out

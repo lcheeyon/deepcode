@@ -92,7 +92,7 @@ pytest apps/api/tests -q -k "tenant or auditor"
 ```
 
 - **L12 E2E:** ``tests/e2e/test_full_scan_local.py`` is marked ``integration``. With the API running (Postgres + Redis per L3/L4), set ``DEEPGUARD_E2E_LOCAL=1`` and run ``make e2e-local`` for healthz + create/get scan + P95 smoke. For **worker → COMPLETE + PDF**, run ``python3 -m deepguard_worker`` in another terminal (same ``DATABASE_URL`` / ``REDIS_URL``), then ``DEEPGUARD_E2E_FULL=1 make e2e-local`` to poll until ``COMPLETE``, or ``make e2e-full`` to start compose + API + worker + that poll via ``scripts/e2e_full_scan.sh``.
-- **LangSmith:** not enabled in dev by default; no LangSmith SDK in workspace dependencies. To trace locally, use **OpenTelemetry** (``deepguard_observability``) or add LangSmith as an optional dependency in your environment.
+- **LangSmith / LangFuse / OTEL (EPIC-DG-11):** Workspace includes ``langsmith``, ``langfuse``, and ``langchain`` for callbacks. ``LANGCHAIN_TRACING_V2`` defaults to **true** outside CI when unset; set ``LANGSMITH_API_KEY`` (or ``LANGCHAIN_API_KEY``) to export traces. For **air-gap**, set ``LANGCHAIN_TRACING_V2=false`` or ``DEEPGUARD_AIR_GAP=1``. **LangFuse** activates when ``LANGFUSE_HOST``, ``LANGFUSE_PUBLIC_KEY``, and ``LANGFUSE_SECRET_KEY`` are all set (see ``docker/langfuse/README.md``). **OpenTelemetry:** API/worker call ``configure_observability_at_startup``; FastAPI instrumentation attaches when an SDK ``TracerProvider`` is installed. Unit tests default ``DEEPGUARD_OTEL_BOOTSTRAP=0`` via ``tests/conftest.py``.
 
 ## Phase L2 — Core domain models (`packages/core`)
 

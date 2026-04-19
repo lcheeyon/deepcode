@@ -1,10 +1,14 @@
 # EPIC-DG-14 — Product console frontend (MVP) — exercise current control plane API
 
-> **AC-level test specifications (generated):** Squad copy [`squads/frontend/EPIC-DG-14-detailed.md`](squads/frontend/EPIC-DG-14-detailed.md); per-AC rows [`traceability-ac-detail-matrix.csv`](traceability-ac-detail-matrix.csv). Regenerate: `python3 scripts/generate_ac_details_and_squad_docs.py` then `python3 scripts/validate_user_stories_traceability.py`.
+> **AC-level test specifications (generated):** Squad copy [`squads/frontend/EPIC-DG-14-detailed.md`](squads/frontend/EPIC-DG-14-detailed.md); per-AC rows [`traceability-ac-detail-matrix.csv`](traceability-ac-detail-matrix.csv), JSON [`traceability-ac-detail.json`](traceability-ac-detail.json). Regenerate: `python3 scripts/generate_ac_details_and_squad_docs.py` then `python3 scripts/validate_user_stories_traceability.py`.
+>
+> **BDD catalog + CI/PDF evidence:** Per-AC Gherkin anchors live in [`../../apps/web/e2e/features/epic-dg-14-bdd-catalog.feature.md`](../../apps/web/e2e/features/epic-dg-14-bdd-catalog.feature.md). Traceability to Playwright specs, GitHub Actions workflow URL, HTML artifact name (`playwright-report-console`), and local PDF path is in [`traceability-epic-dg-14-bdd-evidence.csv`](traceability-epic-dg-14-bdd-evidence.csv). See also [`../../apps/web/e2e/features/README.md`](../../apps/web/e2e/features/README.md).
 
 **Goal:** Ship a **product-facing** web console (default stack: **Next.js 14 + App Router + Tailwind**) that **exercises every behaviour** exposed by today’s **FastAPI `/v1` surface** (`health`, `scans` create/read/cancel, `repo-uploads` presign), with **visual design** locked to **`.cursor/skills/deepguard-ui-style-guide/SKILL.md`** and **`reference.md`** (tokens, shell, tables, forms, toasts, accessibility).
 
-**Non-goal (this epic):** UI for endpoints **not yet implemented** (e.g. `GET /v1/scans` list pagination, findings grid, policies catalogue) except **clear placeholders** and links to **EPIC-DG-12** backlog stories.
+**Non-goal (this epic):** UI for endpoints **not yet implemented** (e.g. `GET /v1/scans` list pagination, full findings grid, policies catalogue) except **clear placeholders** and links to **EPIC-DG-12** backlog stories.
+
+**Also in scope (API + scan detail UI):** `GET /v1/scans/{id}/workflow`, `GET /v1/scans/{id}/workflow/stream` (SSE), `GET /v1/scans/{id}/trace-links` — US-DG-14-015–017; see **`apps/web/src/app/(app)/scans/[id]/page.tsx`** for checklist / handoffs / vendor links.
 
 **Primary personas:** Developer integrating scans, internal operator validating staging.
 
@@ -283,7 +287,44 @@
 
 ---
 
+## US-DG-14-015 — Scan workflow inspector (sanitized API)
+
+**As a** developer, **I want** **`GET /v1/scans/{scan_id}/workflow`** returning lifecycle fields, a **node checklist** (planned vs completed / failed), **sanitized** run events, **agent handoffs**, and **external trace pointers**, **so that** the MVP console can render a first-party timeline without embedding LangSmith/LangFuse.
+
+**Acceptance criteria**
+
+- **AC-DG-14-015-01:** Response includes **`status`**, **`current_stage`**, **`percent_complete`**, **`correlation_id`** (when known from events), and **`graph_version`** hints from payloads; **no raw LangGraph checkpoint JSON** and no secrets — payloads pass through **`redact_secrets`** / metadata sanitization rules from observability.
+- **AC-DG-14-015-02:** **`planned_nodes`** align to the Odysseus topology (ingestion + fan-out + convergence + downstream agents); checklist marks nodes using persisted **`scan_run_events`** (`node_progress`, errors, etc.).
+- **AC-DG-14-015-03:** **`handoffs`** list is populated from explicit **`agent_handoff`** events (worker emits sequential handoffs between graph steps); suitable for a simple sequence / DAG visualization later.
+- **AC-DG-14-015-04:** Query flag **`include_events=false`** returns checklist + summary counts only (large scans).
+
+---
+
+## US-DG-14-016 — Live workflow stream (SSE)
+
+**As an** operator, **I want** **`GET /v1/scans/{scan_id}/workflow/stream`** (**SSE**) with the **same event schema** as the workflow API, **so that** the scan detail page updates in near real time while the worker runs.
+
+**Acceptance criteria**
+
+- **AC-DG-14-016-01:** Stream uses **`text/event-stream`**; initial connection may replay recent events from Postgres, then **Redis pub/sub** channel **`deepguard:scan:{scan_id}:timeline`** when Redis is configured (worker publishes after each insert).
+- **AC-DG-14-016-02:** When **Redis is unavailable** (e.g. `DEEPGUARD_L3_MEMORY_STORE=1`), SSE **polls** the in-memory repository on an interval so local demos still work.
+- **AC-DG-14-016-03:** Client uses **`fetch` streaming** (or equivalent) so **`X-API-Key`** can be sent; document that native **`EventSource`** cannot attach the header.
+
+---
+
+## US-DG-14-017 — External trace links (LangSmith / LangFuse)
+
+**As a** power user, **I want** **`GET /v1/scans/{scan_id}/trace-links`** returning **ready-to-open URLs** when the worker captured a **root LangChain run id** or trace metadata, **so that** I can jump to LangSmith or LangFuse for token-level spans.
+
+**Acceptance criteria**
+
+- **AC-DG-14-017-01:** Rows live in **`scan_external_trace_refs`** (upsert per vendor per scan); URLs are built from env (`LANGSMITH_UI_ORIGIN`, `LANGSMITH_ORGANIZATION_ID`, `LANGSMITH_PROJECT_ID`, `LANGFUSE_HOST`, etc.) and omit secrets.
+- **AC-DG-14-017-02:** If URL cannot be built (missing org/project), response still returns stored **ids** and a **`null`** `url` with a short **`reason`**.
+
+---
+
 ### Traceability notes
 
 - Maps to **EPIC-DG-02** (`POST/GET/cancel` scans, `repo-uploads`), **EPIC-DG-04** (git vs archive, presign path), **EPIC-DG-12** (future superset UI).
 - Visual rules: **`.cursor/skills/deepguard-ui-style-guide/SKILL.md`** + **`reference.md`**.
+- **BDD ↔ automation evidence:** [`traceability-epic-dg-14-bdd-evidence.csv`](traceability-epic-dg-14-bdd-evidence.csv) (one row per **AC-DG-14-\*** above); scenario text and GitHub-deep-link anchors: [`../../apps/web/e2e/features/epic-dg-14-bdd-catalog.feature.md`](../../apps/web/e2e/features/epic-dg-14-bdd-catalog.feature.md).
